@@ -1,0 +1,22 @@
+[Unit]
+Description=optimal-buy-gdax-deposit
+Wants=optimal-buy-gdax-deposit.timer
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker stop optimal-buy-gdax
+ExecStartPre=-/usr/bin/docker rm optimal-buy-gdax
+ExecStartPre=/usr/bin/docker pull brndnmtthws/optimal-buy-gdax
+ExecStart=/usr/bin/docker run --name optimal-buy-gdax \
+  brndnmtthws/optimal-buy-gdax \
+  --key myapikey \
+  --b64secret mysecret \
+  --passphrase mypassphrase \
+  --mode deposit \
+  --amount 1000 \
+  --payment-method-id e49c8d15-547b-464e-ac3d-4b9d20b360ec
+
+[Install]
+WantedBy=optimal-buy-gdax-deposit.target

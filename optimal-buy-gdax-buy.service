@@ -1,0 +1,23 @@
+[Unit]
+Description=optimal-buy-gdax-buy
+Wants=optimal-buy-gdax-buy.timer
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker stop optimal-buy-gdax
+ExecStartPre=-/usr/bin/docker rm optimal-buy-gdax
+ExecStartPre=/usr/bin/docker pull brndnmtthws/optimal-buy-gdax
+ExecStart=/usr/bin/docker run --name optimal-buy-gdax \
+  brndnmtthws/optimal-buy-gdax \
+  --key myapikey \
+  --b64secret mysecret \
+  --passphrase mypassphrase \
+  --mode buy \
+  --btc-addr 37N55ywGVJZsKCsfCmkfDvwukN9GJi93vK \
+  --eth-addr 0xb794F5abcde39494cE839613fffBA74279579268 \
+  --ltc-addr 328FYhK7ioQphpsHsQFyDb55yhkEkG6mgf
+
+[Install]
+WantedBy=optimal-buy-gdax-buy.target
