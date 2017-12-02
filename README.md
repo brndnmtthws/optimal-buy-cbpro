@@ -75,9 +75,9 @@ PR!
 you're probably going to have a bad time
 * You might have a few dollars (<$100) sitting in your account at all times, even when all orders have been filled
 
-# Tipjar
+# Tip jar
 
 If you got some value out of this, please send some kudos my way:
 
-* BTC: 37N55ywGVJZsKCsfCmkfDvwukN9GJi93vK
-* LTC: 328FYhK7ioQphpsHsQFyDb55yhkEkG6mgf
+* BTC: 3EEAE1oKEMnmHGU5Qxibv9mBQyNnes8j8N
+* LTC: 3MxmLzTf4sPsFBGYUnX9MMMbTMeaUSox46
