@@ -158,30 +158,42 @@ def withdraw(accounts):
 
     # BTC
     btc_account = get_account(accounts, 'BTC')
-    transaction = client.crypto_withdraw(
-        amount=btc_account['balance'],
-        currency='BTC',
-        crypto_address=args.btc_addr
-    )
-    print('transaction={}'.format(transaction))
+    if btc_account['balance'] < 0.01:
+        print('BTC balance only {}, not withdrawing'.format(
+            btc_account['balance']))
+    else:
+        transaction = client.crypto_withdraw(
+            amount=btc_account['balance'],
+            currency='BTC',
+            crypto_address=args.btc_addr
+        )
+        print('transaction={}'.format(transaction))
 
     # ETH
     eth_account = get_account(accounts, 'ETH')
-    transaction = client.crypto_withdraw(
-        amount=eth_account['balance'],
-        currency='ETH',
-        crypto_address=args.eth_addr
-    )
-    print('transaction={}'.format(transaction))
+    if eth_account['balance'] < 0.01:
+        print('ETH balance only {}, not withdrawing'.format(
+            eth_account['balance']))
+    else:
+        transaction = client.crypto_withdraw(
+            amount=eth_account['balance'],
+            currency='ETH',
+            crypto_address=args.eth_addr
+        )
+        print('transaction={}'.format(transaction))
 
     # LTC
     ltc_account = get_account(accounts, 'LTC')
-    transaction = client.crypto_withdraw(
-        amount=ltc_account['balance'],
-        currency='LTC',
-        crypto_address=args.ltc_addr
-    )
-    print('transaction={}'.format(transaction))
+    if ltc_account['balance'] < 0.01:
+        print('LTC balance only {}, not withdrawing'.format(
+            ltc_account['balance']))
+    else:
+        transaction = client.crypto_withdraw(
+            amount=ltc_account['balance'],
+            currency='LTC',
+            crypto_address=args.ltc_addr
+        )
+        print('transaction={}'.format(transaction))
 
 
 def buy():
