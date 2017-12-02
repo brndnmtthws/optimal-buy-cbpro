@@ -29,6 +29,8 @@ Ideally, this script would help to make sure that when we dip—
 
 Duh. Not my fault if you lose everything.
 
+Unless you completely trust me, I suggest you make a copy of the repo and build your own container to prevent any sort of funny business.
+
 # How do I use it?
 
 1. Set up a GDAX account, and link your bank account
