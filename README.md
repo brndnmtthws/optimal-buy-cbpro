@@ -34,6 +34,7 @@ Unless you place **absolute trust** in me, some guy from the Internet, I suggest
 
 # How do I use it?
 
+1. Get yourself a hardware wallet, such as a [Ledger](https://www.ledgerwallet.com/) or [TREZOR](https://trezor.io/).
 1. Set up a GDAX account, and link your bank account
 1. Create the necessary API credentials for GDAX, with permissions to
 manage funds, withdraw without 2FA, and trade
@@ -47,7 +48,7 @@ manage funds, withdraw without 2FA, and trade
 [`/etc/systemd/system/optimal-buy-gdax-deposit.service`](optimal-buy-gdax-deposit.service), and
 [`/etc/systemd/system/optimal-buy-gdax-deposit.timer`](optimal-buy-gdax-deposit.timer) to your liking. Make sure you:
 
-    * Change the BTC, ETH, and LTC deposit addresses
+    * Change the BTC, ETH, and LTC deposit addresses to deposit the coins into your wallet (use a Ledger or TREZOR)
     * Put the correct API keys in
     * Check the deposit amount (start with something small, like $150, to make sure it actually works first)
     * Check the timer dates
