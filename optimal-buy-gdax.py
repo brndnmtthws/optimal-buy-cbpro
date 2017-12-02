@@ -119,7 +119,7 @@ def place_buy_orders(balance_difference_usd, coin, price):
     remaining_usd = balance_difference_usd
     # If the size is <=0.6, set a single buy order, because otherwise
     # it will get rejected
-    if remaining_usd / price <= 0.6:
+    if remaining_usd / price <= 0.5:
         discount = 0.995
         amount = remaining_usd
         discounted_price = price * discount
