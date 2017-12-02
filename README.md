@@ -46,7 +46,7 @@ manage funds, withdraw without 2FA, and trade
 
     * Change the BTC, ETH, and LTC deposit addresses
     * Put the correct API keys in
-    * Check the deposit amount
+    * Check the deposit amount (start with something small, like $150, to make sure it actually works first)
     * Check the timer dates
 
 1. Enable the systemd units:
