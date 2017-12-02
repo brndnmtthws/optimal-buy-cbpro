@@ -38,7 +38,7 @@ Unless you place **absolute trust** in me, some guy from the Internet, I suggest
 1. Set up a GDAX account, and link your bank account
 1. Create the necessary API credentials for GDAX, with permissions to
 manage funds, withdraw without 2FA, and trade
-1. Determine the payment_method_id value by using the [GDAX API](https://docs.gdax.com/#payment-methods) (you can use your browser's developer toolbar)
+1. Determine the payment_method_id value by using the [GDAX API](https://docs.gdax.com/#payment-methods) (you can use your browser's developer toolbar, [here's a quick video showing how](https://youtu.be/NmSEBGbn7Mc))
 1. Get a machine somewhere (GCE, EC2, Digital Ocean) with Docker and systemd
 1. Copy systemd files over:
 
