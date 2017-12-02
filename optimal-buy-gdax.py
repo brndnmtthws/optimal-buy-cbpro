@@ -100,30 +100,42 @@ def get_account(accounts, currency):
         if a['currency'] == currency:
             return a
 
+def set_buy_order(coin, price, size):
+    order = client.buy(
+        price='{0:.2f}'.format(price),
+        size='{0:.8f}'.format(size),
+        type='limit',
+        product_id=coin + '-USD',
+    )
+    print('order={}'.format(order))
+    return order
+
 
 def place_buy_orders(balance_difference_usd, coin, price):
     if balance_difference_usd <= 0.1:
         print('Difference for {} is <= 0.1, skipping'.format(coin))
         return
 
-    # Set 5 buy orders, in 1% discount increments, starting from 5.5% off
     remaining_usd = balance_difference_usd
-    discount = 0.945
-    amount = remaining_usd / 5.0
-    for i in range(0, 5):
-        discount = discount + 0.01
+    # If the size is <=0.6, set a single buy order, because otherwise
+    # it will get rejected
+    if remaining_usd / price <= 0.6:
+        discount = 0.995
+        amount = remaining_usd
         discounted_price = price * discount
         size = amount / (discounted_price)
-        order = client.buy(
-            price='{0:.2f}'.format(discounted_price),
-            size='{0:.8f}'.format(size),
-            type='limit',
-            product_id=coin + '-USD',
-        )
-        print('order={}'.format(order))
-        if remaining_usd <= 0.01:
-            break
-
+        set_buy_order(coin, discounted_price, size)
+    else:
+        # Set 5 buy orders, in 1% discount increments, starting from 5.5% off
+        amount = remaining_usd / 5.0
+        discount = 0.945
+        for i in range(0, 5):
+            discount = discount + 0.01
+            discounted_price = price * discount
+            size = amount / (discounted_price)
+            set_buy_order(coin, discounted_price, size)
+            if remaining_usd <= 0.01:
+                break
 
 
 def start_buy_orders(accounts, prices, usd_balances):
