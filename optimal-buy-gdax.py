@@ -158,7 +158,7 @@ def withdraw(accounts):
 
     # BTC
     btc_account = get_account(accounts, 'BTC')
-    if btc_account['balance'] < 0.01:
+    if float(btc_account['balance']) < 0.01:
         print('BTC balance only {}, not withdrawing'.format(
             btc_account['balance']))
     else:
@@ -171,7 +171,7 @@ def withdraw(accounts):
 
     # ETH
     eth_account = get_account(accounts, 'ETH')
-    if eth_account['balance'] < 0.01:
+    if float(eth_account['balance']) < 0.01:
         print('ETH balance only {}, not withdrawing'.format(
             eth_account['balance']))
     else:
@@ -184,7 +184,7 @@ def withdraw(accounts):
 
     # LTC
     ltc_account = get_account(accounts, 'LTC')
-    if ltc_account['balance'] < 0.01:
+    if float(ltc_account['balance']) < 0.01:
         print('LTC balance only {}, not withdrawing'.format(
             ltc_account['balance']))
     else:
