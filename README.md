@@ -14,7 +14,7 @@ to the following logic:
 1. Check current balances of USD, BTC, ETH, and LTC
 1. If the USD balance is above $100, buy BTC, ETH, and LTC weighted by market cap
 1. If there's enough USD available, place 5 discounted limit orders at the current price minus 0.5% up to 0.55%,
-each order with 1/5th of the remaining amount to buy for each coin
+each order with 1/5th of the remaining amount to buy for each coin(see "[Details on the orders placed](#details-on-the-orders-placed)", below)
 1. If there isn't enough USD available, place 1 buy order at 0.5% off the current price
 1. If the USD account balance is below $100, withdraw coins to desired addresses
 
@@ -66,6 +66,59 @@ manage funds, withdraw without 2FA, and trade
         $ sudo systemctl start optimal-buy-gdax-deposit.timer
 
 1. Enjoy!
+
+# Configuration
+
+    usage: optimal-buy-gdax.py [-h] --mode MODE [--amount AMOUNT] --key KEY
+                               --b64secret B64SECRET --passphrase PASSPHRASE
+                               [--api-url API_URL]
+                               [--payment-method-id PAYMENT_METHOD_ID]
+                               [--btc-addr BTC_ADDR] [--eth-addr ETH_ADDR]
+                               [--ltc-addr LTC_ADDR]
+                               [--starting-discount STARTING_DISCOUNT]
+                               [--discount-step DISCOUNT_STEP]
+                               [--order-count ORDER_COUNT]
+
+    Buy coins!
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --mode MODE           mode (deposit or buy)
+      --amount AMOUNT       amount to deposit
+      --key KEY             API key
+      --b64secret B64SECRET
+                            API secret
+      --passphrase PASSPHRASE
+                            API passphrase
+      --api-url API_URL     API URL (default: https://api.gdax.com)
+      --payment-method-id PAYMENT_METHOD_ID
+                            Payment method ID for USD deposit
+      --btc-addr BTC_ADDR   BTC withdrawal address
+      --eth-addr ETH_ADDR   ETH withdrawal address
+      --ltc-addr LTC_ADDR   LTC withdrawal address
+      --starting-discount STARTING_DISCOUNT
+                            starting discount (default: 0.005)
+      --discount-step DISCOUNT_STEP
+                            discount step between orders (default: 0.01)
+      --order-count ORDER_COUNT
+                            number of orders (default: 5)
+
+
+# Details on the orders placed
+
+By default, there are 5 orders placed (for each currency) in steps of 1%,
+starting at a 0.5% discount from the current price. To illustrate, if the
+current price was $100 (per LTC, let's say), and you had $100 to buy,
+the orders would look like this:
+
+Order | Size      | Price
+------|-----------|------
+    1 | 4.975 LTC | $99.5
+    2 | 4.925 LTC | $98.5
+    3 | 4.875 LTC | $97.5
+    4 | 4.825 LTC | $96.5
+    5 | 4.775 LTC | $95.5
+
 
 # Caveats/limitations
 

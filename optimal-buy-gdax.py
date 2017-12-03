@@ -12,13 +12,20 @@ parser.add_argument('--amount', type=float, help='amount to deposit')
 parser.add_argument('--key', help='API key', required=True)
 parser.add_argument('--b64secret', help='API secret', required=True)
 parser.add_argument('--passphrase', help='API passphrase', required=True)
-parser.add_argument('--api-url', help='API URL',
+parser.add_argument('--api-url', help='API URL (default: https://api.gdax.com)',
                     default='https://api.gdax.com')
 parser.add_argument('--payment-method-id',
                     help='Payment method ID for USD deposit')
 parser.add_argument('--btc-addr', help='BTC withdrawal address')
 parser.add_argument('--eth-addr', help='ETH withdrawal address')
 parser.add_argument('--ltc-addr', help='LTC withdrawal address')
+parser.add_argument('--starting-discount', type=float,
+                    help='starting discount (default: 0.005)', default=0.005)
+parser.add_argument('--discount-step', type=float,
+                    help='discount step between orders (default: 0.01)',
+                    default=0.01)
+parser.add_argument('--order-count', type=float,
+                    help='number of orders (default: 5)', default=0.01)
 
 args = parser.parse_args()
 
@@ -119,29 +126,27 @@ def set_buy_order(coin, price, size):
 
 def place_buy_orders(balance_difference_usd, coin, price):
     if balance_difference_usd <= 0.1:
-        print('Difference for {} is <= 0.1, skipping'.format(coin))
+        print('Difference for {} is <= $0.1, skipping'.format(coin))
         return
 
     remaining_usd = balance_difference_usd
     # If the size is <= minimum * 5, set a single buy order, because otherwise
     # it will get rejected
-    if remaining_usd / price <= minimum_order_size[coin] * 5:
-        discount = 0.995
+    if remaining_usd / price <= minimum_order_size[coin] * args.order_count:
+        discount = 1 - args.starting_discount
         amount = remaining_usd
         discounted_price = price * discount
         size = amount / (discounted_price)
         set_buy_order(coin, discounted_price, size)
     else:
-        # Set 5 buy orders, in 1% discount increments, starting from 5.5% off
-        amount = remaining_usd / 5.0
-        discount = 0.945
+        # Set 5 buy orders, in 1% discount increments, starting from 0.5% off
+        amount = remaining_usd / args.order_count
+        discount = 1 - args.starting_discount
         for i in range(0, 5):
-            discount = discount + 0.01
             discounted_price = price * discount
             size = amount / (discounted_price)
             set_buy_order(coin, discounted_price, size)
-            if remaining_usd <= 0.01:
-                break
+            discount = discount - args.discount_step
 
 
 def start_buy_orders(accounts, prices, usd_balances):
