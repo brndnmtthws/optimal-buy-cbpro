@@ -27,6 +27,7 @@ coins = {
     'ETH': 'Ethereum',
     'LTC': 'Litecoin',
 }
+
 minimum_order_size = {
     'BTC': 0.0001,
     'ETH': 0.001,
@@ -175,7 +176,7 @@ def withdraw(accounts):
 
     # BTC
     btc_account = get_account(accounts, 'BTC')
-    if float(btc_account['balance']) < 0.01:
+    if float(btc_account['balance']) < minimum_order_size['BTC']:
         print('BTC balance only {}, not withdrawing'.format(
             btc_account['balance']))
     else:
@@ -188,7 +189,7 @@ def withdraw(accounts):
 
     # ETH
     eth_account = get_account(accounts, 'ETH')
-    if float(eth_account['balance']) < 0.01:
+    if float(eth_account['balance']) < minimum_order_size['ETH']:
         print('ETH balance only {}, not withdrawing'.format(
             eth_account['balance']))
     else:
@@ -201,7 +202,7 @@ def withdraw(accounts):
 
     # LTC
     ltc_account = get_account(accounts, 'LTC')
-    if float(ltc_account['balance']) < 0.01:
+    if float(ltc_account['balance']) < minimum_order_size['LTC']:
         print('LTC balance only {}, not withdrawing'.format(
             ltc_account['balance']))
     else:
