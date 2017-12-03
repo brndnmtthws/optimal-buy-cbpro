@@ -127,7 +127,11 @@ Order | Size      | Price
 PR!
 * If you try to trade manually or using some other bot at the same time,
 you're probably going to have a bad time
-* You might have a few dollars (<$100) sitting in your account at all times, even when all orders have been filled
+* You might have a few dollars (<$100) sitting in your account at all times,
+even when all orders have been filled
+* It makes a best effort with minimal complexity to invest all of your USD,
+but it may not be possible to fill all orders right away
+* It may take a few days for the market to drop enough for the buys to fill
 
 # Tip jar
 
