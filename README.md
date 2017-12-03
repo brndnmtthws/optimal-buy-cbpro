@@ -51,7 +51,7 @@ manage funds, withdraw without 2FA, and trade
     * Change the BTC, ETH, and LTC deposit addresses to deposit the coins into your wallet (use a Ledger or TREZOR)
     * Put the correct API keys in
     * Check the deposit amount (start with something small, like $150, to make sure it actually works first)
-    * Check the timer dates
+    * Check the timer dates (it would be sensible to change the hh:mm so your script doesn't run the same time as everyone else's)
 
 1. Enable the systemd units:
 
