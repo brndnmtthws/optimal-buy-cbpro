@@ -119,6 +119,24 @@ Order | Size      | Price
 4 | 0.2072 LTC | $96.5
 5 | 0.2094 LTC | $95.5
 
+Furthermore, the amount of each currency to buy will be based on the current
+market cap weighting of each coin. For example, at the time of writing the
+weights are:
+
+Coin | Market Cap (USD) | Weight
+-----|------------------|-------
+BTC | $195,824,365,435 | 0.791
+ETH | $46,080,472,372	| 0.186
+LTC | $5,592,776,540 | 0.023
+
+So if your USD account had $1000 to invest, the amount invested in each would
+become:
+
+Coin | Weight | Amount Invested
+-----|--------|----------------
+BTC | 0.791 | $791
+ETH | 0.186 | $186
+LTC | 0.023 | $23
 
 # Caveats/limitations
 
