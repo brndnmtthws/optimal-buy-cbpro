@@ -27,6 +27,11 @@ coins = {
     'ETH': 'Ethereum',
     'LTC': 'Litecoin',
 }
+minimum_order_size = {
+    'BTC': 0.0001,
+    'ETH': 0.001,
+    'LTC': 0.01,
+}
 
 client = gdax.AuthenticatedClient(args.key, args.b64secret, args.passphrase,
                                   args.api_url)
@@ -117,9 +122,9 @@ def place_buy_orders(balance_difference_usd, coin, price):
         return
 
     remaining_usd = balance_difference_usd
-    # If the size is <=0.6, set a single buy order, because otherwise
+    # If the size is <= minimum * 5, set a single buy order, because otherwise
     # it will get rejected
-    if remaining_usd / price <= 0.5:
+    if remaining_usd / price <= minimum_order_size[coin] * 5:
         discount = 0.995
         amount = remaining_usd
         discounted_price = price * discount
