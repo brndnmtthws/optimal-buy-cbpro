@@ -13,7 +13,7 @@ to the following logic:
 
 1. Check current balances of USD, BTC, ETH, and LTC
 1. If the USD balance is above $100, buy BTC, ETH, and LTC weighted by market cap
-1. If there's enough USD available, place 5 discounted limit orders at the current price minus 0.5% up to 5.5%,
+1. If there's enough USD available, place 5 discounted limit orders at the current price minus 0.5% up to 4.5%,
 each order with 1/5th of the remaining amount to buy for each coin(see "[Details on the orders placed](#details-on-the-orders-placed)", below)
 1. If there isn't enough USD available, place 1 buy order at 0.5% off the current price
 1. If the USD account balance is below $100, withdraw coins to desired addresses
