@@ -113,11 +113,11 @@ the orders would look like this:
 
 Order | Size      | Price
 ------|-----------|------
-    1 | 4.975 LTC | $99.5
-    2 | 4.925 LTC | $98.5
-    3 | 4.875 LTC | $97.5
-    4 | 4.825 LTC | $96.5
-    5 | 4.775 LTC | $95.5
+1 | 4.975 LTC | $99.5
+2 | 4.925 LTC | $98.5
+3 | 4.875 LTC | $97.5
+4 | 4.825 LTC | $96.5
+5 | 4.775 LTC | $95.5
 
 
 # Caveats/limitations
