@@ -1,5 +1,6 @@
 # optimal-buy-gdax
-Scheduled buying of BTC, ETH, and LTC from GDAX optimally! Be your own index/hedge fund, and stop paying management fees to someone else!
+
+Scheduled buying of BTC, ETH, and LTC from GDAX optimally! Be your own index/hedge fund, and stop paying those greasy management fees.
 
 ![crypto](crypto.gif)
 
