@@ -3,6 +3,7 @@
 import gdax
 import argparse
 import sys
+import math
 from coinmarketcap import Market
 
 parser = argparse.ArgumentParser(description='Buy coins!')
@@ -12,7 +13,8 @@ parser.add_argument('--amount', type=float, help='amount to deposit')
 parser.add_argument('--key', help='API key', required=True)
 parser.add_argument('--b64secret', help='API secret', required=True)
 parser.add_argument('--passphrase', help='API passphrase', required=True)
-parser.add_argument('--api-url', help='API URL (default: https://api.gdax.com)',
+parser.add_argument('--api-url',
+                    help='API URL (default: https://api.gdax.com)',
                     default='https://api.gdax.com')
 parser.add_argument('--payment-method-id',
                     help='Payment method ID for USD deposit')
@@ -25,7 +27,7 @@ parser.add_argument('--discount-step', type=float,
                     help='discount step between orders (default: 0.01)',
                     default=0.01)
 parser.add_argument('--order-count', type=float,
-                    help='number of orders (default: 5)', default=0.01)
+                    help='number of orders (default: 5)', default=5)
 
 args = parser.parse_args()
 
@@ -86,6 +88,14 @@ def get_balance_for(accounts, coin):
     return 0
 
 
+def get_products():
+    products = client.get_products()
+    for p in products:
+        if p['base_currency'] in coins and p['quote_currency'] == 'USD':
+            minimum_order_size[p['base_currency']] = float(p['base_min_size'])
+    return products
+
+
 def get_prices():
     prices = {}
     for c in coins:
@@ -114,37 +124,38 @@ def get_account(accounts, currency):
             return a
 
 def set_buy_order(coin, price, size):
+    print('placing order coin={0} price={1:.2f} size={2:.8f}'.format(
+        coin, price, size))
     order = client.buy(
         price='{0:.2f}'.format(price),
         size='{0:.8f}'.format(size),
         type='limit',
         product_id=coin + '-USD',
+        post_only='true',
     )
     print('order={}'.format(order))
     return order
 
 
 def place_buy_orders(balance_difference_usd, coin, price):
-    if balance_difference_usd <= 0.1:
-        print('Difference for {} is <= $0.1, skipping'.format(coin))
-        return
-
-    remaining_usd = balance_difference_usd
     # If the size is <= minimum * 5, set a single buy order, because otherwise
     # it will get rejected
-    if remaining_usd / price <= minimum_order_size[coin] * args.order_count:
+    if balance_difference_usd / price <= \
+            minimum_order_size[coin] * args.order_count:
         discount = 1 - args.starting_discount
-        amount = remaining_usd
+        amount = balance_difference_usd
         discounted_price = price * discount
-        size = amount / (discounted_price)
+        size = amount / discounted_price
         set_buy_order(coin, discounted_price, size)
     else:
         # Set 5 buy orders, in 1% discount increments, starting from 0.5% off
-        amount = remaining_usd / args.order_count
+        amount = math.floor(
+            100 * balance_difference_usd / args.order_count) / 100.0
         discount = 1 - args.starting_discount
         for i in range(0, 5):
             discounted_price = price * discount
-            size = amount / (discounted_price)
+            size = amount / discounted_price
+            print(amount, discounted_price, size)
             set_buy_order(coin, discounted_price, size)
             discount = discount - args.discount_step
 
@@ -163,7 +174,8 @@ def start_buy_orders(accounts, prices, usd_balances):
 
     balance_differences_usd = {}
     for c in coins:
-        balance_differences_usd[c] = target_amount_usd[c] - usd_balances[c]
+        balance_differences_usd[c] = math.floor(
+            100 * (target_amount_usd[c] - usd_balances[c])) / 100.0
     print('balance_differences_usd={}'.format(balance_differences_usd))
 
     for c in coins:
@@ -222,6 +234,8 @@ def withdraw(accounts):
 def buy():
     print('Starting buy and (maybe) withdrawal')
     print('First, cancelling orders')
+    products = get_products()
+    print('products={}'.format(products))
     for c in coins:
         client.cancel_all(product=c + '-USD')
     # Check if there's any USD available to execute a buy
