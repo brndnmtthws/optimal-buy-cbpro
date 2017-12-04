@@ -53,7 +53,7 @@ manage funds, withdraw without 2FA, and trade
     * Change the BTC, ETH, and LTC deposit addresses to deposit the coins into your wallet (use a Ledger or TREZOR)
     * Put the correct API keys in
     * Check the deposit amount (start with something small, like $150, to make sure it actually works first)
-    * Check the timer dates (it would be sensible to change the hh:mm so your script doesn't run the same time as everyone else's)
+    * Check the timer dates (it would be sensible to change the hh:mm so your script doesn't run the same time as everyone else's), make sure the deposit timer fires according to your deposit schedule (keeping in mind that ACH takes 2-5 business days to clear, typically)
 
 1. Enable the systemd units:
 
