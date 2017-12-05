@@ -29,6 +29,8 @@ parser.add_argument('--discount-step', type=float,
 parser.add_argument('--order-count', type=float,
                     help='number of orders (default: 5)', default=5)
 parser.add_argument('--fiat-currency', help='Fiat currency', default='USD')
+parser.add_argument('--withdrawal-amount', help='withdraw when fiat balance'
+                    'drops below this amount', type=float, default=100)
 
 args = parser.parse_args()
 
@@ -250,7 +252,7 @@ def buy():
     fiat_balances = get_fiat_balances(accounts, prices)
     print('fiat_balances={}'.format(fiat_balances))
 
-    if fiat_balances[args.fiat_currency] > 100:
+    if fiat_balances[args.fiat_currency] > args.withdrawal_amount:
         print('fiat balance above 100 {}, buying more'.format(
             args.fiat_currency))
         start_buy_orders(accounts, prices, fiat_balances)
