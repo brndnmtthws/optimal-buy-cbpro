@@ -17,7 +17,7 @@ parser.add_argument('--api-url',
                     help='API URL (default: https://api.gdax.com)',
                     default='https://api.gdax.com')
 parser.add_argument('--payment-method-id',
-                    help='Payment method ID for USD deposit')
+                    help='Payment method ID for fiat deposits')
 parser.add_argument('--btc-addr', help='BTC withdrawal address')
 parser.add_argument('--eth-addr', help='ETH withdrawal address')
 parser.add_argument('--ltc-addr', help='LTC withdrawal address')
@@ -28,6 +28,7 @@ parser.add_argument('--discount-step', type=float,
                     default=0.01)
 parser.add_argument('--order-count', type=float,
                     help='number of orders (default: 5)', default=5)
+parser.add_argument('--fiat-currency', help='Fiat currency', default='USD')
 
 args = parser.parse_args()
 
@@ -74,10 +75,11 @@ def deposit():
     if args.payment_method_id is None:
         print('Please provide a bank ID with `--payment-method-id`')
         sys.exit(1)
-    print('Performing deposit, amount={} USD'.format(args.amount))
+    print('Performing deposit, amount={} {}'.format(args.amount,
+                                                    args.fiat_currency))
     result = client.deposit(payment_method_id=args.payment_method_id,
                             amount=args.amount,
-                            currency='USD')
+                            currency=args.fiat_currency)
     print(result)
 
 
@@ -91,7 +93,8 @@ def get_balance_for(accounts, coin):
 def get_products():
     products = client.get_products()
     for p in products:
-        if p['base_currency'] in coins and p['quote_currency'] == 'USD':
+        if p['base_currency'] in coins \
+                and p['quote_currency'] == args.fiat_currency:
             minimum_order_size[p['base_currency']] = float(p['base_min_size'])
     return products
 
@@ -99,16 +102,17 @@ def get_products():
 def get_prices():
     prices = {}
     for c in coins:
-        ticker = client.get_product_ticker(product_id=c + '-USD')
+        ticker = client.get_product_ticker(
+            product_id='{}-{}'.format(c, args.fiat_currency))
         prices[c] = float(ticker['price'])
     return prices
 
 
-def get_usd_balances(accounts, prices):
+def get_fiat_balances(accounts, prices):
     balances = {}
     for a in accounts:
-        if a['currency'] == 'USD':
-            balances['USD'] = float(a['balance'])
+        if a['currency'] == args.fiat_currency:
+            balances[args.fiat_currency] = float(a['balance'])
         elif a['currency'] in coins:
             balances[a['currency']] = \
                 float(a['balance']) * prices[a['currency']]
@@ -130,56 +134,55 @@ def set_buy_order(coin, price, size):
         price='{0:.2f}'.format(price),
         size='{0:.8f}'.format(size),
         type='limit',
-        product_id=coin + '-USD',
+        product_id='{}-{}'.format(coin, args.fiat_currency),
         post_only='true',
     )
     print('order={}'.format(order))
     return order
 
 
-def place_buy_orders(balance_difference_usd, coin, price):
+def place_buy_orders(balance_difference_fiat, coin, price):
     # If the size is <= minimum * 5, set a single buy order, because otherwise
     # it will get rejected
-    if balance_difference_usd / price <= \
+    if balance_difference_fiat / price <= \
             minimum_order_size[coin] * args.order_count:
         discount = 1 - args.starting_discount
-        amount = balance_difference_usd
+        amount = balance_difference_fiat
         discounted_price = price * discount
         size = amount / discounted_price
         set_buy_order(coin, discounted_price, size)
     else:
         # Set 5 buy orders, in 1% discount increments, starting from 0.5% off
         amount = math.floor(
-            100 * balance_difference_usd / args.order_count) / 100.0
+            100 * balance_difference_fiat / args.order_count) / 100.0
         discount = 1 - args.starting_discount
         for i in range(0, 5):
             discounted_price = price * discount
             size = amount / discounted_price
-            print(amount, discounted_price, size)
             set_buy_order(coin, discounted_price, size)
             discount = discount - args.discount_step
 
 
-def start_buy_orders(accounts, prices, usd_balances):
+def start_buy_orders(accounts, prices, fiat_balances):
     weights = get_weights()
 
-    # Determine amount of each coin, in USD, to buy
-    usd_balance_sum = sum(usd_balances.values())
-    print('usd_balance_sum={}'.format(usd_balance_sum))
+    # Determine amount of each coin, in fiat, to buy
+    fiat_balance_sum = sum(fiat_balances.values())
+    print('fiat_balance_sum={}'.format(fiat_balance_sum))
 
-    target_amount_usd = {}
+    target_amount_fiat = {}
     for c in coins:
-        target_amount_usd[c] = usd_balance_sum * weights[c]
-    print('target_amount_usd={}'.format(target_amount_usd))
+        target_amount_fiat[c] = fiat_balance_sum * weights[c]
+    print('target_amount_fiat={}'.format(target_amount_fiat))
 
-    balance_differences_usd = {}
+    balance_differences_fiat = {}
     for c in coins:
-        balance_differences_usd[c] = math.floor(
-            100 * (target_amount_usd[c] - usd_balances[c])) / 100.0
-    print('balance_differences_usd={}'.format(balance_differences_usd))
+        balance_differences_fiat[c] = math.floor(
+            100 * (target_amount_fiat[c] - fiat_balances[c])) / 100.0
+    print('balance_differences_fiat={}'.format(balance_differences_fiat))
 
     for c in coins:
-        place_buy_orders(balance_differences_usd[c], c, prices[c])
+        place_buy_orders(balance_differences_fiat[c], c, prices[c])
 
 
 def withdraw(accounts):
@@ -237,22 +240,24 @@ def buy():
     products = get_products()
     print('products={}'.format(products))
     for c in coins:
-        client.cancel_all(product=c + '-USD')
-    # Check if there's any USD available to execute a buy
+        client.cancel_all(product='{}-{}'.format(c, args.fiat_currency))
+    # Check if there's any fiat available to execute a buy
     accounts = client.get_accounts()
     prices = get_prices()
     print('accounts={}'.format(accounts))
     print('prices={}'.format(prices))
 
-    usd_balances = get_usd_balances(accounts, prices)
-    print('usd_balances={}'.format(usd_balances))
+    fiat_balances = get_fiat_balances(accounts, prices)
+    print('fiat_balances={}'.format(fiat_balances))
 
-    if usd_balances['USD'] > 100:
-        print('USD balance above $100, buying more')
-        start_buy_orders(accounts, prices, usd_balances)
+    if fiat_balances[args.fiat_currency] > 100:
+        print('fiat balance above 100 {}, buying more'.format(
+            args.fiat_currency))
+        start_buy_orders(accounts, prices, fiat_balances)
     else:
-        print('Only {} USD balance remaining, withdrawing'
-              ' coins without buying'.format(usd_balances['USD']))
+        print('Only {} {} balance remaining, withdrawing'
+              ' coins without buying'.format(
+                  fiat_balances[args.fiat_currency], args.fiat_currency))
         withdraw(accounts)
 
 
