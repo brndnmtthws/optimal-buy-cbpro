@@ -32,15 +32,21 @@ Ideally, this script would help to make sure that when we dip—
 
 Duh. Not my fault if you lose everything.
 
-Unless you place **absolute trust** in me, some guy from the Internet, I suggest you clone the repo and build your own container to protect yourself from any sort of funny business.
+Unless you place **absolute trust** in me, some guy from the Internet, I
+suggest you clone the repo and build your own container to protect yourself
+from any sort of funny business.
 
 # How do I use it?
 
-1. Get yourself a hardware wallet, such as a [Ledger](https://www.ledgerwallet.com/) or [TREZOR](https://trezor.io/).
+1. Get yourself a hardware wallet, such as a
+[Ledger](https://www.ledgerwallet.com/) or [TREZOR](https://trezor.io/).
 1. Set up a GDAX account, and link your bank account
 1. Create the necessary API credentials for GDAX, with permissions to
 manage funds, withdraw without 2FA, and trade
-1. Determine the payment_method_id value by using the [GDAX API](https://docs.gdax.com/#payment-methods) (you can use your browser's developer toolbar, [here's a quick video showing how](https://youtu.be/NmSEBGbn7Mc))
+1. Determine the payment_method_id value by using the
+[GDAX API](https://docs.gdax.com/#payment-methods) (you can use your browser's
+developer toolbar,
+[here's a quick video showing how](https://youtu.be/NmSEBGbn7Mc))
 1. Get a machine somewhere (GCE, EC2, Digital Ocean) with Docker and systemd
 1. Copy systemd files over:
 
@@ -50,10 +56,17 @@ manage funds, withdraw without 2FA, and trade
 [`/etc/systemd/system/optimal-buy-gdax-deposit.service`](optimal-buy-gdax-deposit.service), and
 [`/etc/systemd/system/optimal-buy-gdax-deposit.timer`](optimal-buy-gdax-deposit.timer) to your liking. Make sure you:
 
-    * Change the BTC, ETH, and LTC deposit addresses to deposit the coins into your wallet (use a Ledger or TREZOR)
-    * Put the correct API keys in
-    * Check the deposit amount (start with something small, like $150, to make sure it actually works first)
-    * Check the timer dates (it would be sensible to change the hh:mm so your script doesn't run the same time as everyone else's), make sure the deposit timer fires according to your deposit schedule (keeping in mind that ACH takes 2-5 business days to clear, typically)
+    * Change the BTC, ETH, and LTC deposit addresses to deposit the coins into
+    your wallet (use a Ledger or TREZOR)
+    * Pop in the correct API keys
+    * Check the deposit amount (start with something small, like $150, to make
+    sure it actually works first)
+    * Check the timer dates (it would be sensible to change the hh:mm so your
+    script doesn't run the same time as everyone else's), make sure the deposit
+    timer fires according to your deposit schedule (keeping in mind that ACH
+    takes 2-5 business days to clear, typically)
+    * Consider including your external balances in order to calculate the
+    weights including those balances
 
 1. Enable the systemd units:
 
@@ -81,6 +94,9 @@ manage funds, withdraw without 2FA, and trade
                                [--order-count ORDER_COUNT]
                                [--fiat-currency FIAT_CURRENCY]
                                [--withdrawal-amount WITHDRAWAL_AMOUNT]
+                               [--btc-ext-balance BTC_EXT_BALANCE]
+                               [--eth-ext-balance ETH_EXT_BALANCE]
+                               [--ltc-ext-balance LTC_EXT_BALANCE]
 
     Buy coins!
 
@@ -110,6 +126,12 @@ manage funds, withdraw without 2FA, and trade
       --withdrawal-amount WITHDRAWAL_AMOUNT
                             withdraw when fiat balancedrops below this amount
                             (default: 100)
+      --btc-ext-balance BTC_EXT_BALANCE
+                            BTC external balance
+      --eth-ext-balance ETH_EXT_BALANCE
+                            ETH external balance
+      --ltc-ext-balance LTC_EXT_BALANCE
+                            LTC external balance
 
 # Details on the orders placed
 

@@ -33,6 +33,12 @@ parser.add_argument('--fiat-currency', help='Fiat currency (default: USD)',
 parser.add_argument('--withdrawal-amount', help='withdraw when fiat balance'
                     'drops below this amount (default: 100)',
                     type=float, default=100)
+parser.add_argument('--btc-ext-balance', help='BTC external balance',
+                    type=float, default=0)
+parser.add_argument('--eth-ext-balance', help='ETH external balance',
+                    type=float, default=0)
+parser.add_argument('--ltc-ext-balance', help='LTC external balance',
+                    type=float, default=0)
 
 args = parser.parse_args()
 
@@ -87,13 +93,6 @@ def deposit():
     print(result)
 
 
-def get_balance_for(accounts, coin):
-    for a in accounts:
-        if a['currency'] == coin:
-            return float(a['balance'])
-    return 0
-
-
 def get_products():
     products = client.get_products()
     for p in products:
@@ -112,14 +111,25 @@ def get_prices():
     return prices
 
 
+def get_external_balance(coin):
+    if coin == 'BTC':
+        return args.btc_ext_balance
+    if coin == 'ETH':
+        return args.eth_ext_balance
+    if coin == 'LTC':
+        return args.ltc_ext_balance
+    return 0
+
+
 def get_fiat_balances(accounts, prices):
     balances = {}
     for a in accounts:
         if a['currency'] == args.fiat_currency:
             balances[args.fiat_currency] = float(a['balance'])
         elif a['currency'] in coins:
+            balance = float(a['balance']) + get_external_balance(a['currency'])
             balances[a['currency']] = \
-                float(a['balance']) * prices[a['currency']]
+                balance * prices[a['currency']]
     for c in coins:
         if c not in balances:
             balances[c] = 0
@@ -146,6 +156,13 @@ def set_buy_order(coin, price, size):
 
 
 def place_buy_orders(balance_difference_fiat, coin, price):
+    if balance_difference_fiat <= 0.01:
+        print('balance_difference_fiat={}, not buying {}'.format(
+            balance_difference_fiat, coin))
+        return
+    if price <= 0:
+        print('price={}, not buying {}'.format(price, coin))
+        return
     # If the size is <= minimum * 5, set a single buy order, because otherwise
     # it will get rejected
     if balance_difference_fiat / price <= \
