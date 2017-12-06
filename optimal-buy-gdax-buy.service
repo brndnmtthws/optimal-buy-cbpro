@@ -10,6 +10,7 @@ ExecStartPre=-/usr/bin/docker stop optimal-buy-gdax
 ExecStartPre=-/usr/bin/docker rm optimal-buy-gdax
 ExecStartPre=/usr/bin/docker pull brndnmtthws/optimal-buy-gdax
 ExecStart=/usr/bin/docker run --name optimal-buy-gdax \
+  -v /var/lib/optimal-buy-gdax:/usr/src/app/state \
   brndnmtthws/optimal-buy-gdax \
   --key myapikey \
   --b64secret mysecret \

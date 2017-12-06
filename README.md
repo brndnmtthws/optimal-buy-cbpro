@@ -22,6 +22,11 @@ to the following logic:
 You can also use the same script to schedule deposits from your bank account
 periodically, such as when you're paid.
 
+Orders, deposits, and withdrawals are tracked in a SQLite DB, and the withdrawn
+balances are added to the balances on GDAX to make sure the weights are
+maintained over time. The SQLite DB can be swapped out for any DB that
+SQLAlchemy supports.
+
 Ideally, this script would help to make sure that when we dip—
 
 ![dip](buy-the-dip.gif)
@@ -97,6 +102,7 @@ developer toolbar,
                                [--btc-ext-balance BTC_EXT_BALANCE]
                                [--eth-ext-balance ETH_EXT_BALANCE]
                                [--ltc-ext-balance LTC_EXT_BALANCE]
+                               [--db-engine DB_ENGINE]
 
     Buy coins!
 
@@ -132,6 +138,9 @@ developer toolbar,
                             ETH external balance
       --ltc-ext-balance LTC_EXT_BALANCE
                             LTC external balance
+      --db-engine DB_ENGINE
+                            sqlalchemy DB engine (default:
+                            sqlite:///state/gdax_history.db)
 
 # Details on the orders placed
 

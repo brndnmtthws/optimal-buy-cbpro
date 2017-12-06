@@ -4,6 +4,8 @@ import gdax
 import argparse
 import sys
 import math
+import dateutil.parser
+from history import Order, Deposit, Withdrawal, get_session
 from coinmarketcap import Market
 
 parser = argparse.ArgumentParser(description='Buy coins!')
@@ -39,6 +41,9 @@ parser.add_argument('--eth-ext-balance', help='ETH external balance',
                     type=float, default=0)
 parser.add_argument('--ltc-ext-balance', help='LTC external balance',
                     type=float, default=0)
+parser.add_argument('--db-engine', help='SQLAlchemy DB engine '
+                    '(default: sqlite:///state/gdax_history.db)',
+                    default='sqlite:///state/gdax_history.db')
 
 args = parser.parse_args()
 
@@ -54,8 +59,9 @@ minimum_order_size = {
     'LTC': 0.01,
 }
 
-client = gdax.AuthenticatedClient(args.key, args.b64secret, args.passphrase,
-                                  args.api_url)
+gdax_client = gdax.AuthenticatedClient(args.key, args.b64secret,
+                                       args.passphrase, args.api_url)
+db_session = get_session(args.db_engine)
 
 
 def get_weights():
@@ -87,14 +93,25 @@ def deposit():
         sys.exit(1)
     print('Performing deposit, amount={} {}'.format(args.amount,
                                                     args.fiat_currency))
-    result = client.deposit(payment_method_id=args.payment_method_id,
-                            amount=args.amount,
-                            currency=args.fiat_currency)
-    print(result)
+    deposit = gdax_client.deposit(payment_method_id=args.payment_method_id,
+                                 amount=args.amount,
+                                 currency=args.fiat_currency)
+    print('deposit={}'.format(deposit))
+    if 'id' in deposit:
+        db_session.add(
+            Deposit(
+                payment_method_id=args.payment_method_id,
+                amount=args.amount,
+                currency=args.fiat_currency,
+                payout_at=dateutil.parser.parse(deposit['payout_at']),
+                gdax_deposit_id=deposit['id']
+            )
+        )
+        db_session.commit()
 
 
 def get_products():
-    products = client.get_products()
+    products = gdax_client.get_products()
     for p in products:
         if p['base_currency'] in coins \
                 and p['quote_currency'] == args.fiat_currency:
@@ -105,7 +122,7 @@ def get_products():
 def get_prices():
     prices = {}
     for c in coins:
-        ticker = client.get_product_ticker(
+        ticker = gdax_client.get_product_ticker(
             product_id='{}-{}'.format(c, args.fiat_currency))
         prices[c] = float(ticker['price'])
     return prices
@@ -121,13 +138,15 @@ def get_external_balance(coin):
     return 0
 
 
-def get_fiat_balances(accounts, prices):
+def get_fiat_balances(accounts, withdrawn_balances, prices):
     balances = {}
     for a in accounts:
         if a['currency'] == args.fiat_currency:
             balances[args.fiat_currency] = float(a['balance'])
         elif a['currency'] in coins:
             balance = float(a['balance']) + get_external_balance(a['currency'])
+            if a['currency'] in withdrawn_balances:
+                balance = balance + withdrawn_balances[a['currency']]
             balances[a['currency']] = \
                 balance * prices[a['currency']]
     for c in coins:
@@ -144,7 +163,7 @@ def get_account(accounts, currency):
 def set_buy_order(coin, price, size):
     print('placing order coin={0} price={1:.2f} size={2:.8f}'.format(
         coin, price, size))
-    order = client.buy(
+    order = gdax_client.buy(
         price='{0:.2f}'.format(price),
         size='{0:.8f}'.format(size),
         type='limit',
@@ -152,6 +171,17 @@ def set_buy_order(coin, price, size):
         post_only='true',
     )
     print('order={}'.format(order))
+    if 'id' in order:
+        db_session.add(
+            Order(
+                currency=coin,
+                size=size,
+                price=price,
+                gdax_order_id=order['id'],
+                created_at=dateutil.parser.parse(order['created_at'])
+            )
+        )
+        db_session.commit()
     return order
 
 
@@ -206,6 +236,26 @@ def start_buy_orders(accounts, prices, fiat_balances):
         place_buy_orders(balance_differences_fiat[c], c, prices[c])
 
 
+def execute_withdrawal(amount, currency, crypto_address):
+    print('withdrawing {} {} to {}'.format(amount, currency, crypto_address))
+    transaction = gdax_client.crypto_withdraw(
+        amount=amount,
+        currency=currency,
+        crypto_address=crypto_address
+    )
+    print('transaction={}'.format(transaction))
+    if 'id' in transaction:
+        db_session.add(
+            Withdrawal(
+                amount=amount,
+                currency=currency,
+                crypto_address=crypto_address,
+                gdax_withdrawal_id=transaction['id']
+            )
+        )
+        db_session.commit()
+
+
 def withdraw(accounts):
     # Check that we've got addresses
     if args.btc_addr is None:
@@ -221,12 +271,7 @@ def withdraw(accounts):
         print('BTC balance only {}, not withdrawing'.format(
             btc_account['balance']))
     else:
-        transaction = client.crypto_withdraw(
-            amount=btc_account['balance'],
-            currency='BTC',
-            crypto_address=args.btc_addr
-        )
-        print('transaction={}'.format(transaction))
+        execute_withdrawal(btc_account['balance'], 'BTC', args.btc_addr)
 
     # ETH
     eth_account = get_account(accounts, 'ETH')
@@ -234,12 +279,7 @@ def withdraw(accounts):
         print('ETH balance only {}, not withdrawing'.format(
             eth_account['balance']))
     else:
-        transaction = client.crypto_withdraw(
-            amount=eth_account['balance'],
-            currency='ETH',
-            crypto_address=args.eth_addr
-        )
-        print('transaction={}'.format(transaction))
+        execute_withdrawal(eth_account['balance'], 'ETH', args.eth_addr)
 
     # LTC
     ltc_account = get_account(accounts, 'LTC')
@@ -247,12 +287,18 @@ def withdraw(accounts):
         print('LTC balance only {}, not withdrawing'.format(
             ltc_account['balance']))
     else:
-        transaction = client.crypto_withdraw(
-            amount=ltc_account['balance'],
-            currency='LTC',
-            crypto_address=args.ltc_addr
-        )
-        print('transaction={}'.format(transaction))
+        execute_withdrawal(ltc_account['balance'], 'LTC', args.ltc_addr)
+
+
+def get_withdrawn_balances():
+    from sqlalchemy import func
+    withdrawn_balances = {}
+    withdrawals = db_session.query(
+        func.sum(Withdrawal.amount), Withdrawal.currency
+    ).group_by(Withdrawal.currency).all()
+    for w in withdrawals:
+        withdrawn_balances[w[1]] = w[0]
+    return withdrawn_balances
 
 
 def buy():
@@ -261,14 +307,16 @@ def buy():
     products = get_products()
     print('products={}'.format(products))
     for c in coins:
-        client.cancel_all(product='{}-{}'.format(c, args.fiat_currency))
+        gdax_client.cancel_all(product='{}-{}'.format(c, args.fiat_currency))
     # Check if there's any fiat available to execute a buy
-    accounts = client.get_accounts()
+    accounts = gdax_client.get_accounts()
     prices = get_prices()
+    withdrawn_balances = get_withdrawn_balances()
     print('accounts={}'.format(accounts))
     print('prices={}'.format(prices))
+    print('withdrawn_balances={}'.format(withdrawn_balances))
 
-    fiat_balances = get_fiat_balances(accounts, prices)
+    fiat_balances = get_fiat_balances(accounts, withdrawn_balances, prices)
     print('fiat_balances={}'.format(fiat_balances))
 
     if fiat_balances[args.fiat_currency] > args.withdrawal_amount:
