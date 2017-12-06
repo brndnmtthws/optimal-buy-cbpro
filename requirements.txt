@@ -2,4 +2,4 @@ gdax
 requests
 coinmarketcap
 sqlalchemy
-dateutil
+python-dateutil
