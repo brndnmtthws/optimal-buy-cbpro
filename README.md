@@ -11,13 +11,13 @@ and Litecoin using the GDAX API. It buys these 3 currencies, weighted by market
 cap (as reported by [coinmarketcap.com](https://coinmarketcap.com/)), using a form of [dollar cost averaging](https://www.bogleheads.org/wiki/Dollar_cost_averaging). according
 to the following logic:
 
-1. Check current balances of USD, BTC, ETH, and LTC
-1. If the USD balance is above $100, buy BTC, ETH, and LTC weighted by market cap, as follows:
-    * If there's enough USD available, place 5 discounted limit orders at the current price
+1. Check current balances of fiat (USD by default), BTC, ETH, and LTC
+1. If the fiat balance is above $100, buy BTC, ETH, and LTC weighted by market cap, as follows:
+    * If there's enough fiat available, place 5 discounted limit orders at the current price
     minus 0.5% up to 4.5%, each order with 1/5th of the remaining amount to buy for each coin
     (see "[Details on the orders placed](#details-on-the-orders-placed)", below)
     * If there isn't enough USD available, place 1 buy order at 0.5% off the current price (see "[Order Minimums](https://support.gdax.com/customer/portal/articles/2725970-trading-rules)")
-1. If the USD account balance is below $100, withdraw coins to desired addresses
+1. If the fiat account balance is below $100, withdraw coins to desired addresses
 
 You can also use the same script to schedule deposits from your bank account
 periodically, such as when you're paid.
@@ -79,6 +79,8 @@ manage funds, withdraw without 2FA, and trade
                                [--starting-discount STARTING_DISCOUNT]
                                [--discount-step DISCOUNT_STEP]
                                [--order-count ORDER_COUNT]
+                               [--fiat-currency FIAT_CURRENCY]
+                               [--withdrawal-amount WITHDRAWAL_AMOUNT]
 
     Buy coins!
 
@@ -93,7 +95,7 @@ manage funds, withdraw without 2FA, and trade
                             API passphrase
       --api-url API_URL     API URL (default: https://api.gdax.com)
       --payment-method-id PAYMENT_METHOD_ID
-                            Payment method ID for USD deposit
+                            Payment method ID for fiat deposits
       --btc-addr BTC_ADDR   BTC withdrawal address
       --eth-addr ETH_ADDR   ETH withdrawal address
       --ltc-addr LTC_ADDR   LTC withdrawal address
@@ -103,6 +105,10 @@ manage funds, withdraw without 2FA, and trade
                             discount step between orders (default: 0.01)
       --order-count ORDER_COUNT
                             number of orders (default: 5)
+      --fiat-currency FIAT_CURRENCY
+                            Fiat currency
+      --withdrawal-amount WITHDRAWAL_AMOUNT
+                            withdraw when fiat balancedrops below this amount
 
 
 # Details on the orders placed
@@ -141,14 +147,13 @@ LTC | 0.023 | $23
 
 # Caveats/limitations
 
-* Currently it only supports USD
 * Some values are hardcoded, but if you want to change that feel free to send a
 PR!
 * If you try to trade manually or using some other bot at the same time,
 you're probably going to have a bad time
 * You might have a few dollars (<$100) sitting in your account at all times,
 even when all orders have been filled
-* It makes a best effort with minimal complexity to invest all of your USD,
+* It makes a best effort with minimal complexity to invest all of your fiat,
 but it may not be possible to fill all orders right away
 * It may take a few days for the market to drop enough for the buys to fill
 
