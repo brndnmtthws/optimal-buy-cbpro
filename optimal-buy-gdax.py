@@ -28,9 +28,11 @@ parser.add_argument('--discount-step', type=float,
                     default=0.01)
 parser.add_argument('--order-count', type=float,
                     help='number of orders (default: 5)', default=5)
-parser.add_argument('--fiat-currency', help='Fiat currency', default='USD')
+parser.add_argument('--fiat-currency', help='Fiat currency (default: USD)',
+                    default='USD')
 parser.add_argument('--withdrawal-amount', help='withdraw when fiat balance'
-                    'drops below this amount', type=float, default=100)
+                    'drops below this amount (default: 100)',
+                    type=float, default=100)
 
 args = parser.parse_args()
 

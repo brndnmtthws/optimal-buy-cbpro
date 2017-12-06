@@ -106,10 +106,10 @@ manage funds, withdraw without 2FA, and trade
       --order-count ORDER_COUNT
                             number of orders (default: 5)
       --fiat-currency FIAT_CURRENCY
-                            Fiat currency
+                            Fiat currency (default: USD)
       --withdrawal-amount WITHDRAWAL_AMOUNT
                             withdraw when fiat balancedrops below this amount
-
+                            (default: 100)
 
 # Details on the orders placed
 
