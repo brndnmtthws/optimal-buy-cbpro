@@ -328,7 +328,7 @@ def buy():
             args.fiat_currency))
         start_buy_orders(accounts, prices, fiat_balances)
     else:
-        print('Only {} {} balance remaining, withdrawing'
+        print('Only {} {} fiat balance remaining, withdrawing'
               ' coins without buying'.format(
                   fiat_balances[args.fiat_currency], args.fiat_currency))
         withdraw(accounts)
