@@ -17,7 +17,8 @@ to the following logic:
     minus 0.5% up to 4.5%, each order with 1/5th of the remaining amount to buy for each coin
     (see "[Details on the orders placed](#details-on-the-orders-placed)", below)
     * If there isn't enough USD available, place 1 buy order at 0.5% off the current price (see "[Order Minimums](https://support.gdax.com/customer/portal/articles/2725970-trading-rules)")
-1. If the fiat account balance is below $100, withdraw coins to desired addresses
+1. If the fiat account balance is below $100 (or whatever you specify),
+withdraw coins to desired addresses
 
 You can also use the same script to schedule deposits from your bank account
 periodically, such as when you're paid.
@@ -164,7 +165,7 @@ weights are:
 Coin | Market Cap (USD) | Weight
 -----|------------------|-------
 BTC | $195,824,365,435 | 0.791
-ETH | $46,080,472,372	| 0.186
+ETH | $46,080,472,372 | 0.186
 LTC | $5,592,776,540 | 0.023
 
 So if your USD account had $1000 to invest, the amount invested in each would
@@ -178,15 +179,16 @@ LTC | 0.023 | $23
 
 # Caveats/limitations
 
-* Some values are hardcoded, but if you want to change that feel free to send a
-PR!
 * If you try to trade manually or using some other bot at the same time,
 you're probably going to have a bad time
 * You might have a few dollars (<$100) sitting in your account at all times,
-even when all orders have been filled
+even when all orders have been filled because it's not always possible to
+fill all orders
 * It makes a best effort with minimal complexity to invest all of your fiat,
 but it may not be possible to fill all orders right away
 * It may take a few days for the market to drop enough for the buys to fill
+* If the market experiences a significant bull run, your orders won't be
+filled, but it will reset every 24h (using the default buy timer)
 
 # Tip jar
 
