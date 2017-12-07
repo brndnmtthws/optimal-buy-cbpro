@@ -223,7 +223,7 @@ def start_buy_orders(accounts, prices, fiat_balances, fiat_amount):
     weights = get_weights()
 
     # Determine amount of each coin, in fiat, to buy
-    fiat_balance_sum = sum(fiat_balances.values()) - fiat_amount
+    fiat_balance_sum = sum(fiat_balances.values())
     print('fiat_balance_sum={}'.format(fiat_balance_sum))
 
     target_amount_fiat = {}
