@@ -189,7 +189,7 @@ def set_buy_order(coin, price, size):
     return order
 
 
-def place_buy_orders(balance_difference_fiat, coin, price):
+def place_buy_orders(balance_difference_fiat, coin, price, fiat_amount):
     if balance_difference_fiat <= 0.01:
         print('balance_difference_fiat={}, not buying {}'.format(
             balance_difference_fiat, coin))
@@ -197,6 +197,13 @@ def place_buy_orders(balance_difference_fiat, coin, price):
     if price <= 0:
         print('price={}, not buying {}'.format(price, coin))
         return
+    if balance_difference_fiat > fiat_amount:
+        print('balance_difference_fiat={} which is greater '
+              'than fiat_amount={}, only buying'
+              ' {}'.format(balance_difference_fiat,
+                           fiat_amount,
+                           fiat_amount))
+        balance_difference_fiat = fiat_amount
     # If the size is <= minimum * 5, set a single buy order, because otherwise
     # it will get rejected
     if balance_difference_fiat / price <= \
@@ -218,7 +225,7 @@ def place_buy_orders(balance_difference_fiat, coin, price):
             discount = discount - args.discount_step
 
 
-def start_buy_orders(accounts, prices, fiat_balances):
+def start_buy_orders(accounts, prices, fiat_balances, fiat_amount):
     weights = get_weights()
 
     # Determine amount of each coin, in fiat, to buy
@@ -237,7 +244,8 @@ def start_buy_orders(accounts, prices, fiat_balances):
     print('balance_differences_fiat={}'.format(balance_differences_fiat))
 
     for c in coins:
-        place_buy_orders(balance_differences_fiat[c], c, prices[c])
+        place_buy_orders(balance_differences_fiat[c], c, prices[c],
+                         fiat_amount)
 
 
 def execute_withdrawal(amount, currency, crypto_address):
@@ -323,14 +331,15 @@ def buy():
     fiat_balances = get_fiat_balances(accounts, withdrawn_balances, prices)
     print('fiat_balances={}'.format(fiat_balances))
 
-    if fiat_balances[args.fiat_currency] > args.withdrawal_amount:
+    fiat_amount = fiat_balances[args.fiat_currency]
+    if fiat_amount > args.withdrawal_amount:
         print('fiat balance above 100 {}, buying more'.format(
             args.fiat_currency))
-        start_buy_orders(accounts, prices, fiat_balances)
+        start_buy_orders(accounts, prices, fiat_balances, fiat_amount)
     else:
-        print('Only {} {} fiat balance remaining, withdrawing'
+        print('Only {} {} fia   t balance remaining, withdrawing'
               ' coins without buying'.format(
-                  fiat_balances[args.fiat_currency], args.fiat_currency))
+                  fiat_amount, args.fiat_currency))
         withdraw(accounts)
 
 
