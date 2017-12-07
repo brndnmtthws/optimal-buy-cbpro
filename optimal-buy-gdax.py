@@ -189,7 +189,7 @@ def set_buy_order(coin, price, size):
     return order
 
 
-def place_buy_orders(balance_difference_fiat, coin, price, fiat_amount):
+def place_buy_orders(balance_difference_fiat, coin, price):
     if balance_difference_fiat <= 0.01:
         print('balance_difference_fiat={}, not buying {}'.format(
             balance_difference_fiat, coin))
@@ -197,13 +197,7 @@ def place_buy_orders(balance_difference_fiat, coin, price, fiat_amount):
     if price <= 0:
         print('price={}, not buying {}'.format(price, coin))
         return
-    if balance_difference_fiat > fiat_amount:
-        print('balance_difference_fiat={} which is greater '
-              'than fiat_amount={}, only buying'
-              ' {}'.format(balance_difference_fiat,
-                           fiat_amount,
-                           fiat_amount))
-        balance_difference_fiat = fiat_amount
+
     # If the size is <= minimum * 5, set a single buy order, because otherwise
     # it will get rejected
     if balance_difference_fiat / price <= \
@@ -229,7 +223,7 @@ def start_buy_orders(accounts, prices, fiat_balances, fiat_amount):
     weights = get_weights()
 
     # Determine amount of each coin, in fiat, to buy
-    fiat_balance_sum = sum(fiat_balances.values())
+    fiat_balance_sum = sum(fiat_balances.values()) - fiat_amount
     print('fiat_balance_sum={}'.format(fiat_balance_sum))
 
     target_amount_fiat = {}
@@ -243,9 +237,19 @@ def start_buy_orders(accounts, prices, fiat_balances, fiat_amount):
             100 * (target_amount_fiat[c] - fiat_balances[c])) / 100.0
     print('balance_differences_fiat={}'.format(balance_differences_fiat))
 
+    # Calculate portion of each to buy
+    sum_to_buy = 0
+    for coin in balance_differences_fiat:
+        if balance_differences_fiat[coin] >= 0:
+            sum_to_buy += balance_differences_fiat[coin]
+    amount_to_buy = {}
+    for coin in balance_differences_fiat:
+        amount_to_buy[coin] = (balance_differences_fiat[coin] / sum_to_buy) * \
+            fiat_amount
+    print('amount_to_buy={}'.format(amount_to_buy))
+
     for c in coins:
-        place_buy_orders(balance_differences_fiat[c], c, prices[c],
-                         fiat_amount)
+        place_buy_orders(amount_to_buy[c], c, prices[c])
 
 
 def execute_withdrawal(amount, currency, crypto_address):
