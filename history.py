@@ -26,6 +26,7 @@ class Withdrawal(Base):
     id = Column(Integer, primary_key=True)
     currency = Column(String)
     amount = Column(Float)
+    crypto_address = Column(String)
     gdax_withdrawal_id = Column(String)
 
 
