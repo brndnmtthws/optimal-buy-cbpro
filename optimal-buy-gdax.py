@@ -191,8 +191,8 @@ def set_buy_order(coin, price, size):
 
 def place_buy_orders(balance_difference_fiat, coin, price):
     if balance_difference_fiat <= 0.01:
-        print('balance_difference_fiat={}, not buying {}'.format(
-            balance_difference_fiat, coin))
+        print('{}: balance_difference_fiat={}, not buying {}'.format(
+            coin, balance_difference_fiat, coin))
         return
     if price <= 0:
         print('price={}, not buying {}'.format(price, coin))
