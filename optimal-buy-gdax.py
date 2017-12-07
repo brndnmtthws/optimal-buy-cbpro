@@ -128,14 +128,18 @@ def get_prices():
     return prices
 
 
+external_balances = {
+    'BTC': args.btc_ext_balance,
+    'ETH': args.eth_ext_balance,
+    'LTC': args.ltc_ext_balance,
+}
+
+
 def get_external_balance(coin):
-    if coin == 'BTC':
-        return args.btc_ext_balance
-    if coin == 'ETH':
-        return args.eth_ext_balance
-    if coin == 'LTC':
-        return args.ltc_ext_balance
-    return 0
+    if external_balances[coin] > 0:
+        print('including external balance of {} {}'.format(
+            external_balances[coin], coin))
+    return external_balances.get(coin, 0)
 
 
 def get_fiat_balances(accounts, withdrawn_balances, prices):
