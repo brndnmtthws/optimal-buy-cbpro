@@ -255,7 +255,9 @@ def start_buy_orders(accounts, prices, fiat_balances, fiat_amount):
 def execute_withdrawal(amount, currency, crypto_address):
     # The GDAX API does something goofy where the account balance
     # has more decimal places than the withdrawal API supports, so
-    # we have to account for that here
+    # we have to account for that here. Plus, the format()
+    # function will round the float, so we have to do some
+    # janky flooring.
     amount = '{0:.9f}'.format(float(amount))[0:-1]
     print('withdrawing {} {} to {}'.format(amount, currency, crypto_address))
     transaction = gdax_client.crypto_withdraw(
