@@ -94,8 +94,8 @@ def deposit():
     print('Performing deposit, amount={} {}'.format(args.amount,
                                                     args.fiat_currency))
     deposit = gdax_client.deposit(payment_method_id=args.payment_method_id,
-                                 amount=args.amount,
-                                 currency=args.fiat_currency)
+                                  amount=args.amount,
+                                  currency=args.fiat_currency)
     print('deposit={}'.format(deposit))
     if 'id' in deposit:
         db_session.add(
