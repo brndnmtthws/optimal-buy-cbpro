@@ -256,7 +256,7 @@ def execute_withdrawal(amount, currency, crypto_address):
     # The GDAX API does something goofy where the account balance
     # has more decimal places than the withdrawal API supports, so
     # we have to account for that here
-    amount = '{0:.8f}'.format(float(amount))
+    amount = '{0:.9f}'.format(float(amount))[0:-1]
     print('withdrawing {} {} to {}'.format(amount, currency, crypto_address))
     transaction = gdax_client.crypto_withdraw(
         amount=amount,
