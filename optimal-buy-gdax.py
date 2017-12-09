@@ -4,6 +4,7 @@ import gdax
 import argparse
 import sys
 import math
+import time
 import dateutil.parser
 from history import Order, Deposit, Withdrawal, get_session
 from coinmarketcap import Market
@@ -44,6 +45,9 @@ parser.add_argument('--ltc-ext-balance', help='LTC external balance',
 parser.add_argument('--db-engine', help='SQLAlchemy DB engine '
                     '(default: sqlite:///gdax_history.db)',
                     default='sqlite:///gdax_history.db')
+parser.add_argument('--max-retries', help='Maximum number of times to retry'
+                    ' if there are any failures (such as API issues)',
+                    type=int, default=3)
 
 args = parser.parse_args()
 
@@ -77,7 +81,7 @@ def get_weights():
     weights = {}
     for c in coins:
         weights[c] = market_cap[c] / total_market_cap
-    print('Coin weights:')
+    print('coin weights:')
     for w in weights:
         print('  {0}: {1:.4f}'.format(w, weights[w]))
     print()
@@ -86,12 +90,12 @@ def get_weights():
 
 def deposit():
     if args.amount is None:
-        print('Please specify deposit amount with `--amount`')
+        print('please specify deposit amount with `--amount`')
         sys.exit(1)
     if args.payment_method_id is None:
-        print('Please provide a bank ID with `--payment-method-id`')
+        print('please provide a bank ID with `--payment-method-id`')
         sys.exit(1)
-    print('Performing deposit, amount={} {}'.format(args.amount,
+    print('performing deposit, amount={} {}'.format(args.amount,
                                                     args.fiat_currency))
     deposit = gdax_client.deposit(payment_method_id=args.payment_method_id,
                                   amount=args.amount,
@@ -281,11 +285,11 @@ def execute_withdrawal(amount, currency, crypto_address):
 def withdraw(accounts):
     # Check that we've got addresses
     if args.btc_addr is None:
-        print('No BTC withdraw address specified with `--btc-addr`')
+        print('no BTC withdraw address specified with `--btc-addr`')
     if args.eth_addr is None:
-        print('No ETH withdraw address specified with `--eth-addr`')
+        print('no ETH withdraw address specified with `--eth-addr`')
     if args.ltc_addr is None:
-        print('No LTC withdraw address specified with `--ltc-addr`')
+        print('no LTC withdraw address specified with `--ltc-addr`')
 
     # BTC
     btc_account = get_account(accounts, 'BTC')
@@ -324,8 +328,8 @@ def get_withdrawn_balances():
 
 
 def buy():
-    print('Starting buy and (maybe) withdrawal')
-    print('First, cancelling orders')
+    print('starting buy and (maybe) withdrawal')
+    print('first, cancelling orders')
     products = get_products()
     print('products={}'.format(products))
     for c in coins:
@@ -347,13 +351,29 @@ def buy():
             args.fiat_currency))
         start_buy_orders(accounts, prices, fiat_balances, fiat_amount)
     else:
-        print('Only {} {} fiat balance remaining, withdrawing'
+        print('only {} {} fiat balance remaining, withdrawing'
               ' coins without buying'.format(
                   fiat_amount, args.fiat_currency))
         withdraw(accounts)
 
 
-if args.mode == 'deposit':
-    deposit()
-elif args.mode == 'buy':
-    buy()
+retry = 0
+backoff = 5
+while retry < args.max_retries:
+    retry += 1
+    print('attempt {} of {}'.format(retry, args.max_retries))
+    try:
+        if args.mode == 'deposit':
+            deposit()
+        elif args.mode == 'buy':
+            buy()
+        sys.exit(0)
+    except Exception as e:
+        print('caught an exception: ', e)
+        import traceback
+        traceback.print_exc()
+        sys.stderr.flush()
+        sys.stdout.flush()
+        print('sleeping for {}s'.format(backoff))
+        time.sleep(backoff)
+        backoff = backoff * 2

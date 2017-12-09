@@ -142,6 +142,9 @@ developer toolbar,
       --db-engine DB_ENGINE
                             SQLAlchemy DB engine (default:
                             sqlite:///gdax_history.db)
+      --max-retries MAX_RETRIES
+                            Maximum number of times to retry if there are any
+                            failures (such as API issues)
 
 # Details on the orders placed
 
