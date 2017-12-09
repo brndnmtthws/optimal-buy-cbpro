@@ -140,8 +140,8 @@ developer toolbar,
       --ltc-ext-balance LTC_EXT_BALANCE
                             LTC external balance
       --db-engine DB_ENGINE
-                            sqlalchemy DB engine (default:
-                            sqlite:///state/gdax_history.db)
+                            SQLAlchemy DB engine (default:
+                            sqlite:///gdax_history.db)
 
 # Details on the orders placed
 
