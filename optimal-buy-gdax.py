@@ -128,6 +128,7 @@ def get_prices():
     for c in coins:
         ticker = gdax_client.get_product_ticker(
             product_id='{}-{}'.format(c, args.fiat_currency))
+        print('{} ticker={}'.format(c, ticker))
         prices[c] = float(ticker['price'])
     return prices
 
