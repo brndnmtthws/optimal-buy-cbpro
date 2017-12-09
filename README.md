@@ -132,7 +132,7 @@ developer toolbar,
                             Fiat currency (default: USD)
       --withdrawal-amount WITHDRAWAL_AMOUNT
                             withdraw when fiat balancedrops below this amount
-                            (default: 100)
+                            (default: 10)
       --btc-ext-balance BTC_EXT_BALANCE
                             BTC external balance
       --eth-ext-balance ETH_EXT_BALANCE

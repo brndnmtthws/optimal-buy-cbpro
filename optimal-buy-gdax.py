@@ -33,8 +33,8 @@ parser.add_argument('--order-count', type=float,
 parser.add_argument('--fiat-currency', help='Fiat currency (default: USD)',
                     default='USD')
 parser.add_argument('--withdrawal-amount', help='withdraw when fiat balance'
-                    'drops below this amount (default: 100)',
-                    type=float, default=100)
+                    'drops below this amount (default: 10)',
+                    type=float, default=10)
 parser.add_argument('--btc-ext-balance', help='BTC external balance',
                     type=float, default=0)
 parser.add_argument('--eth-ext-balance', help='ETH external balance',
