@@ -368,6 +368,7 @@ while retry < args.max_retries:
             deposit()
         elif args.mode == 'buy':
             buy()
+        sys.stdout.flush()
         sys.exit(0)
     except Exception as e:
         print('caught an exception: ', e)
