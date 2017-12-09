@@ -42,8 +42,8 @@ parser.add_argument('--eth-ext-balance', help='ETH external balance',
 parser.add_argument('--ltc-ext-balance', help='LTC external balance',
                     type=float, default=0)
 parser.add_argument('--db-engine', help='SQLAlchemy DB engine '
-                    '(default: sqlite:///state/gdax_history.db)',
-                    default='sqlite:///state/gdax_history.db')
+                    '(default: sqlite:///gdax_history.db)',
+                    default='sqlite:///gdax_history.db')
 
 args = parser.parse_args()
 
