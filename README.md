@@ -144,7 +144,7 @@ developer toolbar,
                             sqlite:///gdax_history.db)
       --max-retries MAX_RETRIES
                             Maximum number of times to retry if there are any
-                            failures (such as API issues)
+                            failures, such as API issues (default: 3)
 
 # Details on the orders placed
 

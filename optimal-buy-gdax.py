@@ -46,8 +46,8 @@ parser.add_argument('--db-engine', help='SQLAlchemy DB engine '
                     '(default: sqlite:///gdax_history.db)',
                     default='sqlite:///gdax_history.db')
 parser.add_argument('--max-retries', help='Maximum number of times to retry'
-                    ' if there are any failures (such as API issues)',
-                    type=int, default=3)
+                    ' if there are any failures, such as API issues '
+                    '(default: 3)', type=int, default=3)
 
 args = parser.parse_args()
 
