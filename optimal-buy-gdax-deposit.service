@@ -9,7 +9,7 @@ TimeoutStartSec=0
 # If you're paid bi-weekly, you can use something
 # like the command below to only run the deposit service
 # on either even or odd weeks, depending on your needs.
-#ExecStartPre=/bin/bash -c 'if [ $(($(date +%U) % 2)) == 1 ] ; \
+#ExecStartPre=/bin/bash -c 'if [ $(($(date +%U) % 2)) == 0 ] ; \
 #  then \
 #    echo "this is an even week" ; exit 1 ; \
 #  else \
