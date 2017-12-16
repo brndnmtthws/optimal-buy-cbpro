@@ -184,9 +184,10 @@ LTC | 0.023 | $23
 
 * If you try to trade manually or using some other bot at the same time,
 you're probably going to have a bad time
-* You might have a few dollars (<$100) sitting in your account at all times,
+* You might have a few dollars (<$10, you can change this with
+`--withdrawal-amount`) sitting in your account at all times,
 even when all orders have been filled because it's not always possible to
-fill all orders
+fill all orders and there may be small rounding errors (on the order of cents)
 * It makes a best effort with minimal complexity to invest all of your fiat,
 but it may not be possible to fill all orders right away
 * It may take a few days for the market to drop enough for the buys to fill
