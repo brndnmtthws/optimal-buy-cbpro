@@ -348,8 +348,8 @@ def buy():
 
     fiat_amount = fiat_balances[args.fiat_currency]
     if fiat_amount > args.withdrawal_amount:
-        print('fiat balance above 100 {}, buying more'.format(
-            args.fiat_currency))
+        print('fiat balance above {} {}, buying more'.format(
+            args.withdrawal_amount, args.fiat_currency))
         start_buy_orders(accounts, prices, fiat_balances, fiat_amount)
     else:
         print('only {} {} fiat balance remaining, withdrawing'
