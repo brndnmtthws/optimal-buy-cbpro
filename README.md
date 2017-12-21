@@ -62,7 +62,7 @@ developer toolbar,
 [`/etc/systemd/system/optimal-buy-gdax-deposit.service`](optimal-buy-gdax-deposit.service), and
 [`/etc/systemd/system/optimal-buy-gdax-deposit.timer`](optimal-buy-gdax-deposit.timer) to your liking. Make sure you:
 
-    * Change the BTC, ETH, and LTC deposit addresses to deposit the coins into
+    * Change the BTC, ETH, and LTC withdrawal addresses to deposit the coins into
     your wallet (use a Ledger or TREZOR)
     * Pop in the correct API keys
     * Check the deposit amount (start with something small, like $150, to make
@@ -71,8 +71,8 @@ developer toolbar,
     script doesn't run the same time as everyone else's), make sure the deposit
     timer fires according to your deposit schedule (keeping in mind that ACH
     takes 2-5 business days to clear, typically)
-    * Consider including your external balances in order to calculate the
-    weights including those balances
+    * Consider specifying your external balances in order to accurately
+    calculate the weights and amounts to purchase
 
 1. Enable the systemd units:
 
@@ -93,17 +93,13 @@ developer toolbar,
                                --b64secret B64SECRET --passphrase PASSPHRASE
                                [--api-url API_URL]
                                [--payment-method-id PAYMENT_METHOD_ID]
-                               [--btc-addr BTC_ADDR] [--eth-addr ETH_ADDR]
-                               [--ltc-addr LTC_ADDR]
                                [--starting-discount STARTING_DISCOUNT]
                                [--discount-step DISCOUNT_STEP]
                                [--order-count ORDER_COUNT]
                                [--fiat-currency FIAT_CURRENCY]
                                [--withdrawal-amount WITHDRAWAL_AMOUNT]
-                               [--btc-ext-balance BTC_EXT_BALANCE]
-                               [--eth-ext-balance ETH_EXT_BALANCE]
-                               [--ltc-ext-balance LTC_EXT_BALANCE]
-                               [--db-engine DB_ENGINE]
+                               [--db-engine DB_ENGINE] [--max-retries MAX_RETRIES]
+                               [--coins COINS]
 
     Buy coins!
 
@@ -119,9 +115,6 @@ developer toolbar,
       --api-url API_URL     API URL (default: https://api.gdax.com)
       --payment-method-id PAYMENT_METHOD_ID
                             Payment method ID for fiat deposits
-      --btc-addr BTC_ADDR   BTC withdrawal address
-      --eth-addr ETH_ADDR   ETH withdrawal address
-      --ltc-addr LTC_ADDR   LTC withdrawal address
       --starting-discount STARTING_DISCOUNT
                             starting discount (default: 0.005)
       --discount-step DISCOUNT_STEP
@@ -133,18 +126,34 @@ developer toolbar,
       --withdrawal-amount WITHDRAWAL_AMOUNT
                             withdraw when fiat balancedrops below this amount
                             (default: 10)
-      --btc-ext-balance BTC_EXT_BALANCE
-                            BTC external balance
-      --eth-ext-balance ETH_EXT_BALANCE
-                            ETH external balance
-      --ltc-ext-balance LTC_EXT_BALANCE
-                            LTC external balance
       --db-engine DB_ENGINE
                             SQLAlchemy DB engine (default:
                             sqlite:///gdax_history.db)
       --max-retries MAX_RETRIES
                             Maximum number of times to retry if there are any
                             failures, such as API issues (default: 3)
+      --coins COINS         Coins to trade, minimum trade size, withdrawal
+                            addresses and external balances. Accepts a JSON
+                            string.
+
+    Default coins are as follows:
+    {
+      "BTC":{
+        "name":"Bitcoin",
+        "withdrawal_address":null,
+        "external_balance":0
+      },
+      "ETH":{
+        "name":"Ethereum",
+        "withdrawal_address":null,
+        "external_balance":0
+      },
+      "LTC":{
+        "name":"Litecoin",
+        "withdrawal_address":null,
+        "external_balance":0
+      }
+    }
 
 # Details on the orders placed
 

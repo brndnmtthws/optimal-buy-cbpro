@@ -6,10 +6,35 @@ import sys
 import math
 import time
 import dateutil.parser
+import json
 from history import Order, Deposit, Withdrawal, get_session
 from coinmarketcap import Market
+from requests.exceptions import HTTPError
 
-parser = argparse.ArgumentParser(description='Buy coins!')
+default_coins = """
+{
+  "BTC":{
+    "name":"Bitcoin",
+    "withdrawal_address":null,
+    "external_balance":0
+  },
+  "ETH":{
+    "name":"Ethereum",
+    "withdrawal_address":null,
+    "external_balance":0
+  },
+  "LTC":{
+    "name":"Litecoin",
+    "withdrawal_address":null,
+    "external_balance":0
+  }
+}
+"""
+
+parser = argparse.ArgumentParser(description='Buy coins!',
+                                 epilog='Default coins are as follows: {}'
+                                 .format(default_coins),
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
 parser.add_argument('--mode',
                     help='mode (deposit or buy)', required=True)
 parser.add_argument('--amount', type=float, help='amount to deposit')
@@ -21,9 +46,6 @@ parser.add_argument('--api-url',
                     default='https://api.gdax.com')
 parser.add_argument('--payment-method-id',
                     help='Payment method ID for fiat deposits')
-parser.add_argument('--btc-addr', help='BTC withdrawal address')
-parser.add_argument('--eth-addr', help='ETH withdrawal address')
-parser.add_argument('--ltc-addr', help='LTC withdrawal address')
 parser.add_argument('--starting-discount', type=float,
                     help='starting discount (default: 0.005)', default=0.005)
 parser.add_argument('--discount-step', type=float,
@@ -36,32 +58,20 @@ parser.add_argument('--fiat-currency', help='Fiat currency (default: USD)',
 parser.add_argument('--withdrawal-amount', help='withdraw when fiat balance'
                     'drops below this amount (default: 10)',
                     type=float, default=10)
-parser.add_argument('--btc-ext-balance', help='BTC external balance',
-                    type=float, default=0)
-parser.add_argument('--eth-ext-balance', help='ETH external balance',
-                    type=float, default=0)
-parser.add_argument('--ltc-ext-balance', help='LTC external balance',
-                    type=float, default=0)
 parser.add_argument('--db-engine', help='SQLAlchemy DB engine '
                     '(default: sqlite:///gdax_history.db)',
                     default='sqlite:///gdax_history.db')
 parser.add_argument('--max-retries', help='Maximum number of times to retry'
                     ' if there are any failures, such as API issues '
                     '(default: 3)', type=int, default=3)
+parser.add_argument('--coins', help='Coins to trade, minimum trade size,'
+                    ' withdrawal addresses and external balances. '
+                    'Accepts a JSON string.',
+                    default=default_coins)
 
 args = parser.parse_args()
-
-coins = {
-    'BTC': 'Bitcoin',
-    'ETH': 'Ethereum',
-    'LTC': 'Litecoin',
-}
-
-minimum_order_size = {
-    'BTC': 0.0001,
-    'ETH': 0.001,
-    'LTC': 0.01,
-}
+coins = json.loads(args.coins)
+print("--coins='{}'".format(json.dumps(coins, separators=(',',':'))))
 
 gdax_client = gdax.AuthenticatedClient(args.key, args.b64secret,
                                        args.passphrase, args.api_url)
@@ -73,8 +83,13 @@ def get_weights():
 
     market_cap = {}
     for c in coins:
-        ticker = coinmarketcap.ticker(currency=coins[c])
-        market_cap[c] = float(ticker[0]['market_cap_usd'])
+        try:
+            ticker = coinmarketcap.ticker(currency=coins[c]['name'])
+            market_cap[c] = float(ticker[0]['market_cap_usd'])
+        except HTTPError as e:
+            print('caught exception when fetching ticker for {} with name={}'
+                  .format(c, coins[c]['name']))
+            raise e
 
     total_market_cap = sum(market_cap.values())
 
@@ -119,7 +134,8 @@ def get_products():
     for p in products:
         if p['base_currency'] in coins \
                 and p['quote_currency'] == args.fiat_currency:
-            minimum_order_size[p['base_currency']] = float(p['base_min_size'])
+            coins[p['base_currency']]['minimum_order_size'] = \
+                float(p['base_min_size'])
     return products
 
 
@@ -133,18 +149,12 @@ def get_prices():
     return prices
 
 
-external_balances = {
-    'BTC': args.btc_ext_balance,
-    'ETH': args.eth_ext_balance,
-    'LTC': args.ltc_ext_balance,
-}
-
-
 def get_external_balance(coin):
-    if external_balances[coin] > 0:
+    external_balance = coins[coin].get('external_balance', 0)
+    if external_balance > 0:
         print('including external balance of {} {}'.format(
-            external_balances[coin], coin))
-    return external_balances.get(coin, 0)
+            external_balance, coin))
+    return external_balance
 
 
 def get_fiat_balances(accounts, withdrawn_balances, prices):
@@ -168,6 +178,7 @@ def get_account(accounts, currency):
     for a in accounts:
         if a['currency'] == currency:
             return a
+
 
 def set_buy_order(coin, price, size):
     print('placing order coin={0} price={1:.2f} size={2:.8f}'.format(
@@ -206,7 +217,7 @@ def place_buy_orders(balance_difference_fiat, coin, price):
     # If the size is <= minimum * 5, set a single buy order, because otherwise
     # it will get rejected
     if balance_difference_fiat / price <= \
-            minimum_order_size[coin] * args.order_count:
+            coins[coin].get('minimum_order_size', 0.01) * args.order_count:
         discount = 1 - args.starting_discount
         amount = balance_difference_fiat
         discounted_price = price * discount
@@ -284,37 +295,21 @@ def execute_withdrawal(amount, currency, crypto_address):
 
 
 def withdraw(accounts):
-    # Check that we've got addresses
-    if args.btc_addr is None:
-        print('no BTC withdraw address specified with `--btc-addr`')
-    if args.eth_addr is None:
-        print('no ETH withdraw address specified with `--eth-addr`')
-    if args.ltc_addr is None:
-        print('no LTC withdraw address specified with `--ltc-addr`')
-
-    # BTC
-    btc_account = get_account(accounts, 'BTC')
-    if float(btc_account['balance']) < 0.01:
-        print('BTC balance only {}, not withdrawing'.format(
-            btc_account['balance']))
-    else:
-        execute_withdrawal(btc_account['balance'], 'BTC', args.btc_addr)
-
-    # ETH
-    eth_account = get_account(accounts, 'ETH')
-    if float(eth_account['balance']) < 0.01:
-        print('ETH balance only {}, not withdrawing'.format(
-            eth_account['balance']))
-    else:
-        execute_withdrawal(eth_account['balance'], 'ETH', args.eth_addr)
-
-    # LTC
-    ltc_account = get_account(accounts, 'LTC')
-    if float(ltc_account['balance']) < 0.01:
-        print('LTC balance only {}, not withdrawing'.format(
-            ltc_account['balance']))
-    else:
-        execute_withdrawal(ltc_account['balance'], 'LTC', args.ltc_addr)
+    for coin in coins:
+        if 'withdrawal_address' not in coins[coin] or \
+                coins[coin]['withdrawal_address'] is None or \
+                len(coins[coin]['withdrawal_address']) < 1:
+            print('no {} withdraw address specified, '
+                  'not withdrawing'.format(coin))
+            continue
+        account = get_account(accounts, coin)
+        if float(account['balance']) < 0.01:
+            print('{} balance only {}, not withdrawing'.format(
+                coin, account['balance']))
+        else:
+            execute_withdrawal(account['balance'],
+                               coin,
+                               coin[coin]['withdrawal_address'])
 
 
 def get_withdrawn_balances():
