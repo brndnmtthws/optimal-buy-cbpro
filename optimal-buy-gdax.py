@@ -150,7 +150,7 @@ def get_prices():
 
 
 def get_external_balance(coin):
-    external_balance = coins[coin].get('external_balance', 0)
+    external_balance = float(coins[coin].get('external_balance', 0))
     if external_balance > 0:
         print('including external balance of {} {}'.format(
             external_balance, coin))
