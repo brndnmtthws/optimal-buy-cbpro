@@ -6,9 +6,10 @@ Scheduled buying of BTC, ETH, and LTC from GDAX optimally! Be your own index/hed
 
 # What is this?
 
-This is a Python script you can use to automatically buy Bitcoin, Ethereum,
-and Litecoin using the GDAX API. It buys these 3 currencies, weighted by market
-cap (as reported by [coinmarketcap.com](https://coinmarketcap.com/)), using a form of [dollar cost averaging](https://www.bogleheads.org/wiki/Dollar_cost_averaging). according
+This is a Python script you can use to automatically buy Bitcoin, Ethereum, Litecoin,
+and more using the GDAX API. By default, it buys these 3 currencies, weighted by market
+cap (as reported by [coinmarketcap.com](https://coinmarketcap.com/)), using a form
+of [dollar cost averaging](https://www.bogleheads.org/wiki/Dollar_cost_averaging) according
 to the following logic:
 
 1. Check current balances of fiat (USD by default), BTC, ETH, and LTC
@@ -21,7 +22,9 @@ to the following logic:
 withdraw coins to desired addresses
 
 You can also use the same script to schedule deposits from your bank account
-periodically, such as when you're paid.
+periodically, such as when you're paid. The parameters may be configured to
+suit your preferences, such as which coins to buy, external balances,
+disconut values, number of steps, etc.
 
 Orders, deposits, and withdrawals are tracked in a SQLite DB, and the withdrawn
 balances are added to the balances on GDAX to make sure the weights are
