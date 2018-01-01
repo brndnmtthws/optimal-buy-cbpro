@@ -24,7 +24,7 @@ withdraw coins to desired addresses
 You can also use the same script to schedule deposits from your bank account
 periodically, such as when you're paid. The parameters may be configured to
 suit your preferences, such as which coins to buy, external balances,
-disconut values, number of steps, etc.
+discount values, number of steps, etc.
 
 Orders, deposits, and withdrawals are tracked in a SQLite DB, and the withdrawn
 balances are added to the balances on GDAX to make sure the weights are
@@ -50,8 +50,7 @@ from any sort of funny business.
 1. Get yourself a hardware wallet, such as a
 [Ledger](https://www.ledgerwallet.com/) or [TREZOR](https://trezor.io/).
 1. Set up a GDAX account, and link your bank account
-1. Create the necessary API credentials for GDAX, with permissions to
-manage funds, withdraw without 2FA, and trade
+1. Create a GDAX API key with view, trade, manage, transfer, and bypass-2fa permissions
 1. Determine the payment_method_id value by using the
 [GDAX API](https://docs.gdax.com/#payment-methods) (you can use your browser's
 developer toolbar,
