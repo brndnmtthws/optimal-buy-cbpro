@@ -51,7 +51,7 @@ parser.add_argument('--starting-discount', type=float,
 parser.add_argument('--discount-step', type=float,
                     help='discount step between orders (default: 0.01)',
                     default=0.01)
-parser.add_argument('--order-count', type=float,
+parser.add_argument('--order-count', type=int,
                     help='number of orders (default: 5)', default=5)
 parser.add_argument('--fiat-currency', help='Fiat currency (default: USD)',
                     default='USD')
