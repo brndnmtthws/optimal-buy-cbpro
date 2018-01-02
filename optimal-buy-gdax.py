@@ -230,7 +230,7 @@ def place_buy_orders(balance_difference_fiat, coin, price):
         amount = math.floor(
             100 * balance_difference_fiat / args.order_count) / 100.0
         discount = 1 - args.starting_discount
-        for i in range(0, 5):
+        for i in range(0, args.order_count):
             discounted_price = price * discount
             size = amount / discounted_price
             set_buy_order(coin, discounted_price, size)
