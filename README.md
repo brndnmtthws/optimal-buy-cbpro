@@ -18,7 +18,7 @@ to the following logic:
     minus 0.5% up to 4.5%, each order with 1/5th of the remaining amount to buy for each coin
     (see "[Details on the orders placed](#details-on-the-orders-placed)", below)
     * If there isn't enough USD available, place 1 buy order at 0.5% off the current price (see "[Order Minimums](https://support.gdax.com/customer/portal/articles/2725970-trading-rules)")
-1. If the fiat account balance is below $100 (or whatever you specify),
+1. If the fiat account balance is below $10 (or whatever you specify),
 withdraw coins to desired addresses
 
 You can also use the same script to schedule deposits from your bank account
