@@ -221,7 +221,8 @@ def place_buy_orders(balance_difference_fiat, coin, price):
     minimum_order_size = coins[coin].get('minimum_order_size', 0.01)
     number_of_orders = min([
         args.order_count,
-        math.floor(balance_difference_fiat / (minimum_order_size * price))
+        max([1, math.floor(
+            balance_difference_fiat / (minimum_order_size * price))])
     ])
     # Set 5 buy orders, in 1% discount increments, starting from 0.5% off
     amount = math.floor(
