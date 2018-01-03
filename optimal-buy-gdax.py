@@ -218,23 +218,20 @@ def place_buy_orders(balance_difference_fiat, coin, price):
 
     # If the size is <= minimum * 5, set a single buy order, because otherwise
     # it will get rejected
-    if balance_difference_fiat / price <= \
-            coins[coin].get('minimum_order_size', 0.01) * args.order_count:
-        discount = 1 - args.starting_discount
-        amount = balance_difference_fiat
+    minimum_order_size = coins[coin].get('minimum_order_size', 0.01)
+    number_of_orders = min([
+        args.order_count,
+        math.floor(balance_difference_fiat / (minimum_order_size * price))
+    ])
+    # Set 5 buy orders, in 1% discount increments, starting from 0.5% off
+    amount = math.floor(
+        100 * balance_difference_fiat / args.order_count) / 100.0
+    discount = 1 - args.starting_discount
+    for i in range(0, number_of_orders):
         discounted_price = price * discount
         size = amount / discounted_price
         set_buy_order(coin, discounted_price, size)
-    else:
-        # Set 5 buy orders, in 1% discount increments, starting from 0.5% off
-        amount = math.floor(
-            100 * balance_difference_fiat / args.order_count) / 100.0
-        discount = 1 - args.starting_discount
-        for i in range(0, args.order_count):
-            discounted_price = price * discount
-            size = amount / discounted_price
-            set_buy_order(coin, discounted_price, size)
-            discount = discount - args.discount_step
+        discount = discount - args.discount_step
 
 
 def start_buy_orders(accounts, prices, fiat_balances, fiat_amount):
