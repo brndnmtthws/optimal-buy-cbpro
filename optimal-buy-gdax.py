@@ -309,7 +309,7 @@ def withdraw(accounts):
         else:
             execute_withdrawal(account['balance'],
                                coin,
-                               coin[coin]['withdrawal_address'])
+                               coins[coin]['withdrawal_address'])
 
 
 def get_withdrawn_balances():
