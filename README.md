@@ -31,6 +31,17 @@ balances are added to the balances on GDAX to make sure the weights are
 maintained over time. The SQLite DB can be swapped out for any DB that
 SQLAlchemy supports.
 
+A note on the default parameters: it's likely you'll want to change
+`--starting-discount`, `--discount-step`, or `--order-count`. The more spread
+out the orders are (i.e., difference between the current price and the lowest
+priced order), the longer they will take to fill (if they fill), and the closer
+the orders are, the more likely you are to miss out on bigger price drops. You
+should consider your appetite for risk and how much you want to optimize for
+catching those dips vs. not missing out on gains. There is no magic here. My
+personal advice is to stick somewhat close to the defaults, and try to
+continuously deposit a little more fiat every week to spread the risk but also
+catch some dips.
+
 Ideally, this script would help to make sure that when we dip—
 
 ![dip](buy-the-dip.gif)
@@ -43,7 +54,7 @@ Duh. Not my fault if you lose everything.
 
 Unless you place **absolute trust** in me, some guy from the Internet, I
 suggest you clone the repo and build your own container to protect yourself
-from any sort of funny business.
+from any type of funny business.
 
 # How do I use it?
 
