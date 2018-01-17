@@ -226,7 +226,7 @@ def place_buy_orders(balance_difference_fiat, coin, price):
     ])
     # Set 5 buy orders, in 1% discount increments, starting from 0.5% off
     amount = math.floor(
-        100 * balance_difference_fiat / args.order_count) / 100.0
+        100 * balance_difference_fiat / number_of_orders) / 100.0
     discount = 1 - args.starting_discount
     for i in range(0, number_of_orders):
         discounted_price = price * discount
