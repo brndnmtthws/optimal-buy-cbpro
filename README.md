@@ -10,16 +10,18 @@ This is a Python script you can use to automatically buy Bitcoin, Ethereum, Lite
 and more using the GDAX API. By default, it buys these 3 currencies, weighted by market
 cap (as reported by [coinmarketcap.com](https://coinmarketcap.com/)), using a form
 of [dollar cost averaging](https://www.bogleheads.org/wiki/Dollar_cost_averaging) according
-to the following logic:
+to the following logic (assuming default values):
 
 1. Check current balances of fiat (USD by default), BTC, ETH, and LTC
-1. If the fiat balance is above $100, buy BTC, ETH, and LTC weighted by market cap, as follows:
+1. If the fiat balance is above $10, buy BTC, ETH, and LTC weighted by market cap, as follows:
     * If there's enough fiat available, place 5 discounted limit orders at the current price
     minus 0.5% up to 4.5%, each order with 1/5th of the remaining amount to buy for each coin
     (see "[Details on the orders placed](#details-on-the-orders-placed)", below)
     * If there isn't enough USD available, place 1 buy order at 0.5% off the current price (see "[Order Minimums](https://support.gdax.com/customer/portal/articles/2725970-trading-rules)")
 1. If the fiat account balance is below $10 (or whatever you specify),
 withdraw coins to desired addresses
+
+In effect, this script mimmicks the behaviour of a market cap weighted index fund, but without the fees. It also only supports the coins that trade on GDAX (because that's the only exchange that has an API for ACH deposits AFAIK).
 
 You can also use the same script to schedule deposits from your bank account
 periodically, such as when you're paid. The parameters may be configured to
