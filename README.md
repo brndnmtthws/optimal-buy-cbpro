@@ -6,27 +6,34 @@ Scheduled buying of BTC, ETH, and LTC from GDAX optimally! Be your own index/hed
 
 # What is this?
 
-This is a Python script you can use to automatically buy Bitcoin, Ethereum, Litecoin,
-and more using the GDAX API. By default, it buys these 3 currencies, weighted by market
-cap (as reported by [coinmarketcap.com](https://coinmarketcap.com/)), using a form
-of [dollar cost averaging](https://www.bogleheads.org/wiki/Dollar_cost_averaging) according
-to the following logic (assuming default values):
+This is a Python script you can use to automatically buy Bitcoin, Ethereum,
+Litecoin, and more using the GDAX API. By default, it buys these 3 currencies,
+weighted by market cap (as reported by
+[coinmarketcap.com](https://coinmarketcap.com/)), using a form of [dollar cost
+averaging](https://www.bogleheads.org/wiki/Dollar_cost_averaging) according to
+the following logic (assuming default values):
 
 1. Check current balances of fiat (USD by default), BTC, ETH, and LTC
-1. If the fiat balance is above $10, buy BTC, ETH, and LTC weighted by market cap, as follows:
-    * If there's enough fiat available, place 5 discounted limit orders at the current price
-    minus 0.5% up to 4.5%, each order with 1/5th of the remaining amount to buy for each coin
-    (see "[Details on the orders placed](#details-on-the-orders-placed)", below)
-    * If there isn't enough USD available, place 1 buy order at 0.5% off the current price (see "[Order Minimums](https://support.gdax.com/customer/portal/articles/2725970-trading-rules)")
-1. If the fiat account balance is below $10 (or whatever you specify),
-withdraw coins to desired addresses
+1. If the fiat balance is above $10, buy BTC, ETH, and LTC weighted by market
+   cap, as follows:
+    * If there's enough fiat available, place 5 discounted limit orders at the
+    current price minus 0.5% up to 4.5%, each order with 1/5th of the remaining
+    amount to buy for each coin (see
+    "[Details on the orders placed](#details-on-the-orders-placed)", below)
+    * If there isn't enough USD available, place 1 buy order at 0.5% off the
+    current price (see
+    "[Order Minimums](https://support.gdax.com/customer/portal/articles/2725970-trading-rules)")
+1. If the fiat account balance is below $10 (or whatever you specify), withdraw
+coins to desired addresses
 
-In effect, this script mimmicks the behaviour of a market cap weighted index fund, but without the fees. It also only supports the coins that trade on GDAX (because that's the only exchange that has an API for ACH deposits AFAIK).
+In effect, this script mimmicks the behaviour of a market cap weighted index
+fund, but without the fees. It also only supports the coins that trade on GDAX
+(because that's the only exchange that has an API for ACH deposits AFAIK).
 
 You can also use the same script to schedule deposits from your bank account
-periodically, such as when you're paid. The parameters may be configured to
-suit your preferences, such as which coins to buy, external balances,
-discount values, number of steps, etc.
+periodically, such as when you're paid. The parameters may be configured to suit
+your preferences, such as which coins to buy, external balances, discount
+values, number of steps, etc.
 
 Orders, deposits, and withdrawals are tracked in a SQLite DB, and the withdrawn
 balances are added to the balances on GDAX to make sure the weights are
@@ -54,16 +61,17 @@ Ideally, this script would help to make sure that when we dip—
 
 Duh. Not my fault if you lose everything.
 
-Unless you place **absolute trust** in me, some guy from the Internet, I
-suggest you clone the repo and build your own container to protect yourself
-from any type of funny business.
+Unless you place **absolute trust** in me, some guy from the Internet, I suggest
+you clone the repo and build your own container to protect yourself from any
+type of funny business.
 
 # How do I use it?
 
 1. Get yourself a hardware wallet, such as a
 [Ledger](https://www.ledgerwallet.com/) or [TREZOR](https://trezor.io/).
 1. Set up a GDAX account, and link your bank account
-1. Create a GDAX API key with view, trade, manage, transfer, and bypass-2fa permissions
+1. Create a GDAX API key with view, trade, manage, transfer, and bypass-2fa
+permissions
 1. Determine the payment_method_id value by using the
 [GDAX API](https://docs.gdax.com/#payment-methods) (you can use your browser's
 developer toolbar,
@@ -77,8 +85,8 @@ developer toolbar,
 [`/etc/systemd/system/optimal-buy-gdax-deposit.service`](optimal-buy-gdax-deposit.service), and
 [`/etc/systemd/system/optimal-buy-gdax-deposit.timer`](optimal-buy-gdax-deposit.timer) to your liking. Make sure you:
 
-    * Change the BTC, ETH, and LTC withdrawal addresses to deposit the coins into
-    your wallet (use a Ledger or TREZOR)
+    * Change the BTC, ETH, and LTC withdrawal addresses to deposit the coins
+    into your wallet (use a Ledger or TREZOR)
     * Pop in the correct API keys
     * Check the deposit amount (start with something small, like $150, to make
     sure it actually works first)
@@ -174,8 +182,8 @@ developer toolbar,
 
 By default, there are 5 orders placed (for each currency) in steps of 1%,
 starting at a 0.5% discount from the current price. To illustrate, if the
-current price was $100 (per LTC, let's say), and you had $100 to buy,
-the orders would look like this:
+current price was $100 (per LTC, let's say), and you had $100 to buy, the orders
+would look like this:
 
 Order | Size      | Price
 ------|-----------|------
