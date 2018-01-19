@@ -57,6 +57,14 @@ Ideally, this script would help to make sure that when we dip—
 
 **we buy**.
 
+# Will you help me set this up?
+
+Feel free to create a GitHub issue if you need help, and I will help you if it
+doesn't require too much effort on my part. I generally do not provide
+consulting services for free. If you want to hire me, find my contact details
+through the Internet and contact me using whatever your preferred contact method
+is.
+
 # USE AT OWN RISK
 
 Duh. Not my fault if you lose everything.
