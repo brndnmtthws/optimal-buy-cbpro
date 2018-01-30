@@ -14,7 +14,7 @@ averaging](https://www.bogleheads.org/wiki/Dollar_cost_averaging) according to
 the following logic (assuming default values):
 
 1. Check current balances of fiat (USD by default), BTC, ETH, and LTC
-1. If the fiat balance is above $10, buy BTC, ETH, and LTC weighted by market
+1. If the fiat balance is above $25, buy BTC, ETH, and LTC weighted by market
    cap, as follows:
     * If there's enough fiat available, place 5 discounted limit orders at the
     current price minus 0.5% up to 4.5%, each order with 1/5th of the remaining
@@ -23,7 +23,7 @@ the following logic (assuming default values):
     * If there isn't enough USD available, place 1 buy order at 0.5% off the
     current price (see
     "[Order Minimums](https://support.gdax.com/customer/portal/articles/2725970-trading-rules)")
-1. If the fiat account balance is below $10 (or whatever you specify), withdraw
+1. If the fiat account balance is below $25 (or whatever you specify), withdraw
 coins to desired addresses
 
 In effect, this script mimmicks the behaviour of a market cap weighted index
@@ -155,8 +155,8 @@ developer toolbar,
       --fiat-currency FIAT_CURRENCY
                             Fiat currency (default: USD)
       --withdrawal-amount WITHDRAWAL_AMOUNT
-                            withdraw when fiat balancedrops below this amount
-                            (default: 10)
+                            withdraw when fiat balance drops below this amount
+                            (default: 25)
       --db-engine DB_ENGINE
                             SQLAlchemy DB engine (default:
                             sqlite:///gdax_history.db)
@@ -224,7 +224,7 @@ LTC | 0.023 | $23
 
 * If you try to trade manually or using some other bot at the same time,
 you're probably going to have a bad time
-* You might have a few dollars (<$10, you can change this with
+* You might have a few dollars (<$25, you can change this with
 `--withdrawal-amount`) sitting in your account at all times,
 even when all orders have been filled because it's not always possible to
 fill all orders and there may be small rounding errors (on the order of cents)

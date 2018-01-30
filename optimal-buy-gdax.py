@@ -56,8 +56,8 @@ parser.add_argument('--order-count', type=int,
 parser.add_argument('--fiat-currency', help='Fiat currency (default: USD)',
                     default='USD')
 parser.add_argument('--withdrawal-amount', help='withdraw when fiat balance'
-                    'drops below this amount (default: 10)',
-                    type=float, default=10)
+                    ' drops below this amount (default: 10)',
+                    type=float, default=25)
 parser.add_argument('--db-engine', help='SQLAlchemy DB engine '
                     '(default: sqlite:///gdax_history.db)',
                     default='sqlite:///gdax_history.db')
