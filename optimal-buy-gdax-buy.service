@@ -16,10 +16,7 @@ ExecStart=/usr/bin/docker run --name optimal-buy-gdax \
   --key myapikey \
   --b64secret mysecret \
   --passphrase mypassphrase \
-  --mode buy \
-  --btc-addr 3EEAE1oKEMnmHGU5Qxibv9mBQyNnes8j8N \
-  --eth-addr 0xb794F5abcde39494cE839613fffBA74279579268 \
-  --ltc-addr 3MxmLzTf4sPsFBGYUnX9MMMbTMeaUSox46
+  --mode buy
 
 [Install]
 WantedBy=optimal-buy-gdax-buy.target
