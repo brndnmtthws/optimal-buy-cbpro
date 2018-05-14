@@ -1,6 +1,6 @@
 # optimal-buy-gdax
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/d3a104f8a9855313e799/maintainability)](https://codeclimate.com/github/brndnmtthws/optimal-buy-gdax/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/d3a104f8a9855313e799/test_coverage)](https://codeclimate.com/github/brndnmtthws/optimal-buy-gdax/test_coverage)
+[![Build Status](https://travis-ci.org/brndnmtthws/optimal-buy-gdax.svg?branch=master)](https://travis-ci.org/brndnmtthws/optimal-buy-gdax) [![Maintainability](https://api.codeclimate.com/v1/badges/d3a104f8a9855313e799/maintainability)](https://codeclimate.com/github/brndnmtthws/optimal-buy-gdax/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/d3a104f8a9855313e799/test_coverage)](https://codeclimate.com/github/brndnmtthws/optimal-buy-gdax/test_coverage)
 
 Scheduled buying of BTC, ETH, and LTC from GDAX optimally! Be your own index/hedge fund, and stop paying those greasy management fees.
 
