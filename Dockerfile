@@ -1,11 +1,10 @@
 FROM python:3
 
-WORKDIR /usr/src/app
+WORKDIR /appsrc
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+RUN pip install -r requirements.txt \
+  && python setup.py install \
+  && rm -rf /appsrc
 
-COPY optimal-buy-gdax.py .
-COPY history.py .
-
-ENTRYPOINT [ "python", "./optimal-buy-gdax.py" ]
+CMD "optimal-buy-gdax.py"
