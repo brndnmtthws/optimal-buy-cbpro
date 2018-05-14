@@ -7,85 +7,25 @@ import math
 import time
 import dateutil.parser
 import json
-from history import Order, Deposit, Withdrawal, get_session
+from .history import Order, Deposit, Withdrawal, get_session
 from coinmarketcap import Market
 from requests.exceptions import HTTPError
 
-default_coins = """
-{
-  "BTC":{
-    "name":"Bitcoin",
-    "withdrawal_address":null,
-    "external_balance":0
-  },
-  "ETH":{
-    "name":"Ethereum",
-    "withdrawal_address":null,
-    "external_balance":0
-  },
-  "LTC":{
-    "name":"Litecoin",
-    "withdrawal_address":null,
-    "external_balance":0
-  }
-}
-"""
 
-parser = argparse.ArgumentParser(description='Buy coins!',
-                                 epilog='Default coins are as follows: {}'
-                                 .format(default_coins),
-                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-parser.add_argument('--mode',
-                    help='mode (deposit or buy)', required=True)
-parser.add_argument('--amount', type=float, help='amount to deposit')
-parser.add_argument('--key', help='API key', required=True)
-parser.add_argument('--b64secret', help='API secret', required=True)
-parser.add_argument('--passphrase', help='API passphrase', required=True)
-parser.add_argument('--api-url',
-                    help='API URL (default: https://api.gdax.com)',
-                    default='https://api.gdax.com')
-parser.add_argument('--payment-method-id',
-                    help='Payment method ID for fiat deposits')
-parser.add_argument('--starting-discount', type=float,
-                    help='starting discount (default: 0.005)', default=0.005)
-parser.add_argument('--discount-step', type=float,
-                    help='discount step between orders (default: 0.01)',
-                    default=0.01)
-parser.add_argument('--order-count', type=int,
-                    help='number of orders (default: 5)', default=5)
-parser.add_argument('--fiat-currency', help='Fiat currency (default: USD)',
-                    default='USD')
-parser.add_argument('--withdrawal-amount', help='withdraw when fiat balance'
-                    ' drops below this amount (default: 10)',
-                    type=float, default=25)
-parser.add_argument('--db-engine', help='SQLAlchemy DB engine '
-                    '(default: sqlite:///gdax_history.db)',
-                    default='sqlite:///gdax_history.db')
-parser.add_argument('--max-retries', help='Maximum number of times to retry'
-                    ' if there are any failures, such as API issues '
-                    '(default: 3)', type=int, default=3)
-parser.add_argument('--coins', help='Coins to trade, minimum trade size,'
-                    ' withdrawal addresses and external balances. '
-                    'Accepts a JSON string.',
-                    default=default_coins)
-
-args = parser.parse_args()
-coins = json.loads(args.coins)
-print("--coins='{}'".format(json.dumps(coins, separators=(',',':'))))
-
-gdax_client = gdax.AuthenticatedClient(args.key, args.b64secret,
-                                       args.passphrase, args.api_url)
-db_session = get_session(args.db_engine)
-
-
-def get_weights():
+def get_weights(coins, fiat_currency):
     coinmarketcap = Market()
 
     market_cap = {}
     for c in coins:
         try:
-            ticker = coinmarketcap.ticker(currency=coins[c]['name'])
-            market_cap[c] = float(ticker[0]['market_cap_usd'])
+            listings = coinmarketcap.listings()
+            print(listings['data'][0])
+            id = [item['id'] for item in listings['data']
+                  if item['symbol'] == c][0]
+            ticker = coinmarketcap.ticker(id)
+            print(ticker)
+            market_cap[c] = \
+                float(ticker['data']['quotes'][fiat_currency]['market_cap'])
         except HTTPError as e:
             print('caught exception when fetching ticker for {} with name={}'
                   .format(c, coins[c]['name']))
@@ -103,7 +43,7 @@ def get_weights():
     return weights
 
 
-def deposit():
+def deposit(args, gdax_client, db_session):
     if args.amount is None:
         print('please specify deposit amount with `--amount`')
         sys.exit(1)
@@ -129,29 +69,31 @@ def deposit():
         db_session.commit()
 
 
-def get_products():
+def get_products(gdax_client, coins, fiat_currency):
     products = gdax_client.get_products()
     for p in products:
         if p['base_currency'] in coins \
-                and p['quote_currency'] == args.fiat_currency:
+                and p['quote_currency'] == fiat_currency:
             coins[p['base_currency']]['minimum_order_size'] = \
                 float(p['base_min_size'])
     return products
 
 
-def get_prices():
+def get_prices(gdax_client, coins, fiat_currency):
     prices = {}
     for c in coins:
         ticker = gdax_client.get_product_ticker(
-            product_id='{}-{}'.format(c, args.fiat_currency))
+            product_id='{}-{}'.format(c, fiat_currency))
         if 'price' not in ticker:
-            raise(Exception('no price available for {} ticker={}'.format(c, ticker)))
+            raise(
+                Exception('no price available for {} ticker={}'.format(
+                    c, ticker)))
         print('{} ticker={}'.format(c, ticker))
         prices[c] = float(ticker['price'])
     return prices
 
 
-def get_external_balance(coin):
+def get_external_balance(coins, coin):
     external_balance = float(coins[coin].get('external_balance', 0))
     if external_balance > 0:
         print('including external balance of {} {}'.format(
@@ -159,13 +101,14 @@ def get_external_balance(coin):
     return external_balance
 
 
-def get_fiat_balances(accounts, withdrawn_balances, prices):
+def get_fiat_balances(args, coins, accounts, withdrawn_balances, prices):
     balances = {}
     for a in accounts:
         if a['currency'] == args.fiat_currency:
             balances[args.fiat_currency] = float(a['balance'])
         elif a['currency'] in coins:
-            balance = float(a['balance']) + get_external_balance(a['currency'])
+            balance = float(a['balance']) + get_external_balance(coins,
+                                                                 a['currency'])
             if a['currency'] in withdrawn_balances:
                 balance = balance + withdrawn_balances[a['currency']]
             balances[a['currency']] = \
@@ -182,7 +125,7 @@ def get_account(accounts, currency):
             return a
 
 
-def set_buy_order(coin, price, size):
+def set_buy_order(args, coin, price, size, gdax_client, db_session):
     print('placing order coin={0} price={1:.2f} size={2:.8f}'.format(
         coin, price, size))
     order = gdax_client.buy(
@@ -207,7 +150,8 @@ def set_buy_order(coin, price, size):
     return order
 
 
-def place_buy_orders(balance_difference_fiat, coin, price):
+def place_buy_orders(args, balance_difference_fiat, coins, coin, price,
+                     gdax_client, db_session):
     if balance_difference_fiat <= 0.01:
         print('{}: balance_difference_fiat={}, not buying {}'.format(
             coin, balance_difference_fiat, coin))
@@ -231,12 +175,14 @@ def place_buy_orders(balance_difference_fiat, coin, price):
     for i in range(0, number_of_orders):
         discounted_price = price * discount
         size = amount / discounted_price
-        set_buy_order(coin, discounted_price, size)
+        set_buy_order(args, coin, discounted_price, size, gdax_client,
+                      db_session)
         discount = discount - args.discount_step
 
 
-def start_buy_orders(accounts, prices, fiat_balances, fiat_amount):
-    weights = get_weights()
+def start_buy_orders(args, coins, accounts, prices, fiat_balances,
+                     fiat_amount, gdax_client, db_session):
+    weights = get_weights(coins)
 
     # Determine amount of each coin, in fiat, to buy
     fiat_balance_sum = sum(fiat_balances.values())
@@ -265,10 +211,12 @@ def start_buy_orders(accounts, prices, fiat_balances, fiat_amount):
     print('amount_to_buy={}'.format(amount_to_buy))
 
     for c in coins:
-        place_buy_orders(amount_to_buy[c], c, prices[c])
+        place_buy_orders(args, amount_to_buy[c], coins, c, prices[c],
+                         gdax_client, db_session)
 
 
-def execute_withdrawal(amount, currency, crypto_address):
+def execute_withdrawal(gdax_client, amount, currency, crypto_address,
+                       db_session):
     # The GDAX API does something goofy where the account balance
     # has more decimal places than the withdrawal API supports, so
     # we have to account for that here. Plus, the format()
@@ -294,7 +242,7 @@ def execute_withdrawal(amount, currency, crypto_address):
         db_session.commit()
 
 
-def withdraw(accounts):
+def withdraw(coins, accounts, gdax_client, db_session):
     for coin in coins:
         if 'withdrawal_address' not in coins[coin] or \
                 coins[coin]['withdrawal_address'] is None or \
@@ -307,12 +255,14 @@ def withdraw(accounts):
             print('{} balance only {}, not withdrawing'.format(
                 coin, account['balance']))
         else:
-            execute_withdrawal(account['balance'],
+            execute_withdrawal(gdax_client,
+                               account['balance'],
                                coin,
-                               coins[coin]['withdrawal_address'])
+                               coins[coin]['withdrawal_address'],
+                               db_session)
 
 
-def get_withdrawn_balances():
+def get_withdrawn_balances(db_session):
     from sqlalchemy import func
     withdrawn_balances = {}
     withdrawals = db_session.query(
@@ -323,54 +273,129 @@ def get_withdrawn_balances():
     return withdrawn_balances
 
 
-def buy():
+def buy(args, coins, gdax_client, db_session):
     print('starting buy and (maybe) withdrawal')
     print('first, cancelling orders')
-    products = get_products()
+    products = get_products(gdax_client, coins, args.fiat_currency)
     print('products={}'.format(products))
     for c in coins:
         gdax_client.cancel_all(product='{}-{}'.format(c, args.fiat_currency))
     # Check if there's any fiat available to execute a buy
     accounts = gdax_client.get_accounts()
-    prices = get_prices()
-    withdrawn_balances = get_withdrawn_balances()
+    prices = get_prices(gdax_client, coins, args.fiat_currency)
+    withdrawn_balances = get_withdrawn_balances(db_session)
     print('accounts={}'.format(accounts))
     print('prices={}'.format(prices))
     print('withdrawn_balances={}'.format(withdrawn_balances))
 
-    fiat_balances = get_fiat_balances(accounts, withdrawn_balances, prices)
+    fiat_balances = get_fiat_balances(args, coins, accounts,
+                                      withdrawn_balances, prices)
     print('fiat_balances={}'.format(fiat_balances))
 
     fiat_amount = fiat_balances[args.fiat_currency]
     if fiat_amount > args.withdrawal_amount:
         print('fiat balance above {} {}, buying more'.format(
             args.withdrawal_amount, args.fiat_currency))
-        start_buy_orders(accounts, prices, fiat_balances, fiat_amount)
+        start_buy_orders(args, coins, args.fiat_currency, accounts, prices,
+                         fiat_balances, fiat_amount, gdax_client, db_session)
     else:
         print('only {} {} fiat balance remaining, withdrawing'
               ' coins without buying'.format(
                   fiat_amount, args.fiat_currency))
-        withdraw(accounts)
+        withdraw(coins, accounts, gdax_client, db_session)
 
 
-retry = 0
-backoff = 5
-while retry < args.max_retries:
-    retry += 1
-    print('attempt {} of {}'.format(retry, args.max_retries))
-    try:
-        if args.mode == 'deposit':
-            deposit()
-        elif args.mode == 'buy':
-            buy()
-        sys.stdout.flush()
-        sys.exit(0)
-    except Exception as e:
-        print('caught an exception: ', e)
-        import traceback
-        traceback.print_exc()
-        sys.stderr.flush()
-        sys.stdout.flush()
-        print('sleeping for {}s'.format(backoff))
-        time.sleep(backoff)
-        backoff = backoff * 2
+def main():
+    default_coins = """
+    {
+      "BTC":{
+        "name":"Bitcoin",
+        "withdrawal_address":null,
+        "external_balance":0
+      },
+      "ETH":{
+        "name":"Ethereum",
+        "withdrawal_address":null,
+        "external_balance":0
+      },
+      "LTC":{
+        "name":"Litecoin",
+        "withdrawal_address":null,
+        "external_balance":0
+      }
+    }
+    """
+
+    parser = argparse.ArgumentParser(description='Buy coins!',
+                                     epilog='Default coins are as follows: {}'
+                                     .format(default_coins),
+                                     formatter_class=argparse.
+                                     RawDescriptionHelpFormatter)
+    parser.add_argument('--mode',
+                        help='mode (deposit or buy)', required=True)
+    parser.add_argument('--amount', type=float, help='amount to deposit')
+    parser.add_argument('--key', help='API key', required=True)
+    parser.add_argument('--b64secret', help='API secret', required=True)
+    parser.add_argument('--passphrase', help='API passphrase', required=True)
+    parser.add_argument('--api-url',
+                        help='API URL (default: https://api.gdax.com)',
+                        default='https://api.gdax.com')
+    parser.add_argument('--payment-method-id',
+                        help='Payment method ID for fiat deposits')
+    parser.add_argument('--starting-discount', type=float,
+                        help='starting discount (default: 0.005)',
+                        default=0.005)
+    parser.add_argument('--discount-step', type=float,
+                        help='discount step between orders (default: 0.01)',
+                        default=0.01)
+    parser.add_argument('--order-count', type=int,
+                        help='number of orders (default: 5)', default=5)
+    parser.add_argument('--fiat-currency', help='Fiat currency (default: USD)',
+                        default='USD')
+    parser.add_argument('--withdrawal-amount', help='withdraw when fiat '
+                        'balance drops below this amount (default: 10)',
+                        type=float, default=25)
+    parser.add_argument('--db-engine', help='SQLAlchemy DB engine '
+                        '(default: sqlite:///gdax_history.db)',
+                        default='sqlite:///gdax_history.db')
+    parser.add_argument('--max-retries', help='Maximum number of times to '
+                        'retry if there are any failures, such as API issues '
+                        '(default: 3)', type=int, default=3)
+    parser.add_argument('--coins', help='Coins to trade, minimum trade size,'
+                        ' withdrawal addresses and external balances. '
+                        'Accepts a JSON string.',
+                        default=default_coins)
+
+    args = parser.parse_args()
+    coins = json.loads(args.coins)
+    print("--coins='{}'".format(json.dumps(coins, separators=(',', ':'))))
+
+    gdax_client = gdax.AuthenticatedClient(args.key, args.b64secret,
+                                           args.passphrase, args.api_url)
+    db_session = get_session(args.db_engine)
+
+    retry = 0
+    backoff = 5
+    while retry < args.max_retries:
+        retry += 1
+        print('attempt {} of {}'.format(retry, args.max_retries))
+        try:
+            if args.mode == 'deposit':
+                deposit(args, gdax_client, db_session)
+            elif args.mode == 'buy':
+                buy(coins, args, gdax_client, db_session)
+            sys.stdout.flush()
+            sys.exit(0)
+        except Exception as e:
+            print('caught an exception: ', e)
+            import traceback
+            traceback.print_exc()
+            sys.stderr.flush()
+            sys.stdout.flush()
+            print('sleeping for {}s'.format(backoff))
+            time.sleep(backoff)
+            backoff = backoff * 2
+
+
+if __name__ == 'main':
+    main()
