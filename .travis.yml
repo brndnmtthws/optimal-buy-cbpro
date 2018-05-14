@@ -1,7 +1,7 @@
+sudo: false
 env:
   global:
     - CC_TEST_REPORTER_ID=0d9e49a0de99a221037b9f13acd7805d1756970f766e94f1a3eb9e0fd5a4327a
-language: python
 language: python
 python:
   - "3.4"
