@@ -12,7 +12,7 @@ ExecStartPre=/usr/bin/docker pull brndnmtthws/optimal-buy-gdax:v1.0.4
 ExecStart=/usr/bin/docker run --name optimal-buy-gdax \
   -v /var/lib/optimal-buy-gdax:/usr/src/app/state \
   brndnmtthws/optimal-buy-gdax:v1.0.4 \
-  --db-engine sqlite:///usr/src/app/state/gdax_history.db \
+  --db-engine sqlite:////usr/src/app/state/gdax_history.db \
   --key myapikey \
   --b64secret mysecret \
   --passphrase mypassphrase \
