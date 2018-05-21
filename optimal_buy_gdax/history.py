@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-
-import os
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, String, Float, DateTime, Integer
 from sqlalchemy import create_engine

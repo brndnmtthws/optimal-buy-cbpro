@@ -1,5 +1,5 @@
 gdax
 requests
-coinmarketcap
+coinmarketcap>=5.0.0
 sqlalchemy
 python-dateutil

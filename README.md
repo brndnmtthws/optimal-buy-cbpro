@@ -89,7 +89,7 @@ developer toolbar,
 1. Get a machine somewhere (GCE, EC2, Digital Ocean) with Docker and systemd
 1. Copy systemd files over:
 
-        $ sudo cp optimal-buy-gdax-*.{service,timer} /etc/systemd/system
+        $ sudo cp systemd/optimal-buy-gdax-*.{service,timer} /etc/systemd/system
 1. Edit [`/etc/systemd/system/optimal-buy-gdax-buy.service`](optimal-buy-gdax-buy.service),
 [`/etc/systemd/system/optimal-buy-gdax-buy.timer`](optimal-buy-gdax-buy.timer),
 [`/etc/systemd/system/optimal-buy-gdax-deposit.service`](optimal-buy-gdax-deposit.service), and
