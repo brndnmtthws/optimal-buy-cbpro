@@ -383,7 +383,7 @@ def main():
             if args.mode == 'deposit':
                 deposit(args, gdax_client, db_session)
             elif args.mode == 'buy':
-                buy(coins, args, gdax_client, db_session)
+                buy(args, coins, gdax_client, db_session)
             sys.stdout.flush()
             sys.exit(0)
         except Exception as e:
