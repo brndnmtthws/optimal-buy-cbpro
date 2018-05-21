@@ -7,4 +7,4 @@ RUN pip install -r requirements.txt \
   && python setup.py install \
   && rm -rf /appsrc
 
-CMD "optimal-buy-gdax"
+ENTRYPOINT "optimal-buy-gdax"
