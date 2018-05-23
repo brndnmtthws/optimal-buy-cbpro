@@ -150,16 +150,8 @@ def set_buy_order(args, coin, price, size, gdax_client, db_session):
     return order
 
 
-def place_buy_orders(args, balance_difference_fiat, coins, coin, price,
-                     gdax_client, db_session):
-    if balance_difference_fiat <= 0.01:
-        print('{}: balance_difference_fiat={}, not buying {}'.format(
-            coin, balance_difference_fiat, coin))
-        return
-    if price <= 0:
-        print('price={}, not buying {}'.format(price, coin))
-        return
-
+def generate_buy_orders(coins, coin, args, balance_difference_fiat, price):
+    buy_orders = []
     # If the size is <= minimum * 5, set a single buy order, because otherwise
     # it will get rejected
     minimum_order_size = coins[coin].get('minimum_order_size', 0.01)
@@ -175,9 +167,30 @@ def place_buy_orders(args, balance_difference_fiat, coins, coin, price,
     for i in range(0, number_of_orders):
         discounted_price = price * discount
         size = amount / discounted_price
-        set_buy_order(args, coin, discounted_price, size, gdax_client,
-                      db_session)
+        buy_orders.append({
+            'price': discounted_price,
+            'size': size
+        })
         discount = discount - args.discount_step
+    return buy_orders
+
+
+def place_buy_orders(args, balance_difference_fiat, coins, coin, price,
+                     gdax_client, db_session):
+    if balance_difference_fiat <= 0.01:
+        print('{}: balance_difference_fiat={}, not buying {}'.format(
+            coin, balance_difference_fiat, coin))
+        return
+    if price <= 0:
+        print('price={}, not buying {}'.format(price, coin))
+        return
+
+    buy_orders = generate_buy_orders(coins, coin, args,
+                                     balance_difference_fiat, price)
+    for order in buy_orders:
+        set_buy_order(args, coin,
+                      order['price'], order['size'],
+                      gdax_client, db_session)
 
 
 def start_buy_orders(args, coins, accounts, prices, fiat_balances,
@@ -296,7 +309,7 @@ def buy(args, coins, gdax_client, db_session):
     if fiat_amount > args.withdrawal_amount:
         print('fiat balance above {} {}, buying more'.format(
             args.withdrawal_amount, args.fiat_currency))
-        start_buy_orders(args, coins, args.fiat_currency, accounts, prices,
+        start_buy_orders(args, coins, accounts, prices,
                          fiat_balances, fiat_amount, gdax_client, db_session)
     else:
         print('only {} {} fiat balance remaining, withdrawing'
