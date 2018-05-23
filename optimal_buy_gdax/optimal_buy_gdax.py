@@ -195,7 +195,7 @@ def place_buy_orders(args, balance_difference_fiat, coins, coin, price,
 
 def start_buy_orders(args, coins, accounts, prices, fiat_balances,
                      fiat_amount, gdax_client, db_session):
-    weights = get_weights(coins)
+    weights = get_weights(coins, args.fiat_currency)
 
     # Determine amount of each coin, in fiat, to buy
     fiat_balance_sum = sum(fiat_balances.values())
