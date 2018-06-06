@@ -122,17 +122,17 @@ developer toolbar,
 
 # Configuration
 
-    usage: optimal-buy-gdax.py [-h] --mode MODE [--amount AMOUNT] --key KEY
-                               --b64secret B64SECRET --passphrase PASSPHRASE
-                               [--api-url API_URL]
-                               [--payment-method-id PAYMENT_METHOD_ID]
-                               [--starting-discount STARTING_DISCOUNT]
-                               [--discount-step DISCOUNT_STEP]
-                               [--order-count ORDER_COUNT]
-                               [--fiat-currency FIAT_CURRENCY]
-                               [--withdrawal-amount WITHDRAWAL_AMOUNT]
-                               [--db-engine DB_ENGINE] [--max-retries MAX_RETRIES]
-                               [--coins COINS]
+    usage: optimal-buy-gdax [-h] --mode MODE [--amount AMOUNT] --key KEY
+                            --b64secret B64SECRET --passphrase PASSPHRASE
+                            [--api-url API_URL]
+                            [--payment-method-id PAYMENT_METHOD_ID]
+                            [--starting-discount STARTING_DISCOUNT]
+                            [--discount-step DISCOUNT_STEP]
+                            [--order-count ORDER_COUNT]
+                            [--fiat-currency FIAT_CURRENCY]
+                            [--withdrawal-amount WITHDRAWAL_AMOUNT]
+                            [--db-engine DB_ENGINE] [--max-retries MAX_RETRIES]
+                            [--coins COINS]
 
     Buy coins!
 
@@ -170,23 +170,24 @@ developer toolbar,
                             string.
 
     Default coins are as follows:
-    {
-      "BTC":{
-        "name":"Bitcoin",
-        "withdrawal_address":null,
-        "external_balance":0
-      },
-      "ETH":{
-        "name":"Ethereum",
-        "withdrawal_address":null,
-        "external_balance":0
-      },
-      "LTC":{
-        "name":"Litecoin",
-        "withdrawal_address":null,
-        "external_balance":0
-      }
-    }
+        {
+          "BTC":{
+            "name":"Bitcoin",
+            "withdrawal_address":null,
+            "external_balance":0
+          },
+          "ETH":{
+            "name":"Ethereum",
+            "withdrawal_address":null,
+            "external_balance":0
+          },
+          "LTC":{
+            "name":"Litecoin",
+            "withdrawal_address":null,
+            "external_balance":0
+          }
+        }
+
 
 # Details on the orders placed
 
