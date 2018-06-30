@@ -351,8 +351,8 @@ def main():
     parser.add_argument('--b64secret', help='API secret', required=True)
     parser.add_argument('--passphrase', help='API passphrase', required=True)
     parser.add_argument('--api-url',
-                        help='API URL (default: https://api.gdax.com)',
-                        default='https://api.gdax.com')
+                        help='API URL (default: https://api.pro.coinbase.com)',
+                        default='https://api.pro.coinbase.com')
     parser.add_argument('--payment-method-id',
                         help='Payment method ID for fiat deposits')
     parser.add_argument('--starting-discount', type=float,
