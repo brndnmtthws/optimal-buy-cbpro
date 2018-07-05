@@ -2,14 +2,14 @@
 
 [![Build Status](https://travis-ci.org/brndnmtthws/optimal-buy-gdax.svg?branch=master)](https://travis-ci.org/brndnmtthws/optimal-buy-gdax) [![Maintainability](https://api.codeclimate.com/v1/badges/d3a104f8a9855313e799/maintainability)](https://codeclimate.com/github/brndnmtthws/optimal-buy-gdax/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/d3a104f8a9855313e799/test_coverage)](https://codeclimate.com/github/brndnmtthws/optimal-buy-gdax/test_coverage)
 
-Scheduled buying of BTC, ETH, and LTC from GDAX optimally! Be your own index/hedge fund, and stop paying those greasy management fees.
+Scheduled buying of BTC, ETH, and LTC from Coinbase Pro optimally! Be your own index/hedge fund, and stop paying those greasy management fees.
 
 ![crypto](crypto.gif)
 
 # What is this?
 
 This is a Python script you can use to automatically buy Bitcoin, Ethereum,
-Litecoin, and more using the GDAX API. By default, it buys these 3 currencies,
+Litecoin, and more using the Coinbase Pro API. By default, it buys these 3 currencies,
 weighted by market cap (as reported by
 [coinmarketcap.com](https://coinmarketcap.com/)), using a form of [dollar cost
 averaging](https://www.bogleheads.org/wiki/Dollar_cost_averaging) according to
@@ -29,7 +29,7 @@ the following logic (assuming default values):
 coins to desired addresses
 
 In effect, this script mimmicks the behaviour of a market cap weighted index
-fund, but without the fees. It also only supports the coins that trade on GDAX
+fund, but without the fees. It also only supports the coins that trade on Coinbase Pro
 (because that's the only exchange that has an API for ACH deposits AFAIK).
 
 You can also use the same script to schedule deposits from your bank account
@@ -38,7 +38,7 @@ your preferences, such as which coins to buy, external balances, discount
 values, number of steps, etc.
 
 Orders, deposits, and withdrawals are tracked in a SQLite DB, and the withdrawn
-balances are added to the balances on GDAX to make sure the weights are
+balances are added to the balances on Coinbase Pro to make sure the weights are
 maintained over time. The SQLite DB can be swapped out for any DB that
 SQLAlchemy supports.
 
@@ -79,11 +79,11 @@ type of funny business.
 
 1. Get yourself a hardware wallet, such as a
 [Ledger](https://www.ledgerwallet.com/) or [TREZOR](https://trezor.io/).
-1. Set up a GDAX account, and link your bank account
-1. Create a GDAX API key with view, trade, manage, transfer, and bypass-2fa
+1. Set up a Coinbase Pro account, and link your bank account
+1. Create a Coinbase Pro API key with view, trade, manage, transfer, and bypass-2fa
 permissions
 1. Determine the payment_method_id value by using the
-[GDAX API](https://docs.gdax.com/#payment-methods) (you can use your browser's
+[Coinbase Pro API](https://docs.pro.coinbase.com/#payment-methods) (you can use your browser's
 developer toolbar,
 [here's a quick video showing how](https://youtu.be/NmSEBGbn7Mc))
 1. Get a machine somewhere (GCE, EC2, Digital Ocean) with Docker and systemd
