@@ -103,3 +103,7 @@ ENV/
 
 coinmarketcap_cache.sqlite
 state/
+
+# Ignore vscode files.
+.vscode
+*.code-workspace
