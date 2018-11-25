@@ -8,8 +8,8 @@ with open('LICENSE') as f:
 
 setup(
     name='optimal_buy_gdax',
-    version='1',
-    description='Buy the coins',
+    version='0.1.0',
+    description='Buy the coins, optimally!',
     long_description=readme,
     author='Brenden Matthews',
     author_email='brenden@diddyinc.com',

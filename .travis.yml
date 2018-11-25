@@ -1,4 +1,11 @@
 sudo: false
+deploy:
+  provider: pypi
+  user: brndnmtthws
+  password:
+    secure: COZ4YlPb513yCXJUGuNgD+H4t3bsbsBabRyzoTWqCvK9tzIDvI+CFhXvECyXzAqusVdN+ibQU4h63yHE9Wj275G/MzsCj3xlgHxhphPqgGTiNthEOq3VrkGbQAMyX1wC7++6L5ek/bUqiLedORxBhU1qdT6YytSt0XrKkH5GnrF8PGXH2xk9oyF2pnhAzV7y5g09ijn/Bqlqtx37l4aULDAZzfLrX0XAmoIlwKiEw15d3ApRDalF3/O2q3GiJbJ6pcHyAfox9ROEo6+5q7uaf8lo1/k9iGEZLp0UP6FWBUaooPwCaHsYxyOfQovsjP0tEUCeE2AIqVGpIpkWTL8x+J+q6BTyzay7cDv0DeMejk0bpU2zVSJxm9PqximmPDS4u7PzadmJBX1ve1VGlr9FlmboydkHljuBAb1SExkbBTYeMnuk0lbVFEEu/Jc608Sb61ZlaHgz420ACWVw5LrVNLmzgkB9zKaQ5QiWyKp7mBJsBhy+9BRcu2ysYTYS++bVwVs/j4z5ymPJz7o9llef0/o0daizt9lGQqGfbm3wppdKCMFmhSNWWxr9YME2X06cAD5gKcdbTjRmBB9BBxwwi4DFi73uB9RFEZmOO3ju+p464pS7t366KU6wckSMtIPyPkqlqc0XVp+l6IeNhKe6cR9kDGtLt8o+m0Cw5bD53kM=
+  on:
+    tags: true
 env:
   global:
     - CC_TEST_REPORTER_ID=0d9e49a0de99a221037b9f13acd7805d1756970f766e94f1a3eb9e0fd5a4327a
