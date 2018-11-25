@@ -96,17 +96,17 @@ type of funny business.
     [`/etc/systemd/system/optimal-buy-gdax-deposit.service`](optimal-buy-gdax-deposit.service), and
     [`/etc/systemd/system/optimal-buy-gdax-deposit.timer`](optimal-buy-gdax-deposit.timer) to your liking. Make sure you:
 
-        * Change the BTC, ETH, and LTC withdrawal addresses to deposit the coins
-        into your wallet (use a Ledger or TREZOR)
-        * Pop in the correct API keys
-        * Check the deposit amount (start with something small, like $150, to make
-        sure it actually works first)
-        * Check the timer dates (it would be sensible to change the hh:mm so your
-        script doesn't run the same time as everyone else's), make sure the deposit
-        timer fires according to your deposit schedule (keeping in mind that ACH
-        takes 2-5 business days to clear, typically)
-        * Consider specifying your external balances in order to accurately
-        calculate the weights and amounts to purchase
+    - Change the BTC, ETH, and LTC withdrawal addresses to deposit the coins
+      into your wallet (use a Ledger or TREZOR)
+    - Pop in the correct API keys
+    - Check the deposit amount (start with something small, like \$150, to make
+      sure it actually works first)
+    - Check the timer dates (it would be sensible to change the hh:mm so your
+      script doesn't run the same time as everyone else's), make sure the deposit
+      timer fires according to your deposit schedule (keeping in mind that ACH
+      takes 2-5 business days to clear, typically)
+    - Consider specifying your external balances in order to accurately
+      calculate the weights and amounts to purchase
 
 1.  Enable the systemd units:
 
