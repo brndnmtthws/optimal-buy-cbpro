@@ -16,17 +16,17 @@ averaging](https://www.bogleheads.org/wiki/Dollar_cost_averaging) according to
 the following logic (assuming default values):
 
 1. Check current balances of fiat (USD by default), BTC, ETH, and LTC
-1. If the fiat balance is above $25, buy BTC, ETH, and LTC weighted by market
+1. If the fiat balance is above \$25, buy BTC, ETH, and LTC weighted by market
    cap, as follows:
-    * If there's enough fiat available, place 5 discounted limit orders at the
-    current price minus 0.5% up to 4.5%, each order with 1/5th of the remaining
-    amount to buy for each coin (see
-    "[Details on the orders placed](#details-on-the-orders-placed)", below)
-    * If there isn't enough USD available, place 1 buy order at 0.5% off the
-    current price (see
-    "[Order Minimums](https://support.gdax.com/customer/portal/articles/2725970-trading-rules)")
-1. If the fiat account balance is below $25 (or whatever you specify), withdraw
-coins to desired addresses
+   - If there's enough fiat available, place 5 discounted limit orders at the
+     current price minus 0.5% up to 4.5%, each order with 1/5th of the remaining
+     amount to buy for each coin (see
+     "[Details on the orders placed](#details-on-the-orders-placed)", below)
+   - If there isn't enough USD available, place 1 buy order at 0.5% off the
+     current price (see
+     "[Order Minimums](https://support.gdax.com/customer/portal/articles/2725970-trading-rules)")
+1. If the fiat account balance is below \$25 (or whatever you specify), withdraw
+   coins to desired addresses
 
 In effect, this script mimmicks the behaviour of a market cap weighted index
 fund, but without the fees. It also only supports the coins that trade on Coinbase Pro
@@ -77,48 +77,50 @@ type of funny business.
 
 # How do I use it?
 
-1. Get yourself a hardware wallet, such as a
-[Ledger](https://www.ledgerwallet.com/) or [TREZOR](https://trezor.io/).
-1. Set up a Coinbase Pro account, and link your bank account
-1. Create a Coinbase Pro API key with view, trade, manage, transfer, and bypass-2fa
-permissions
-1. Determine the payment_method_id value by using the
-[Coinbase Pro API](https://docs.pro.coinbase.com/#payment-methods) (you can use your browser's
-developer toolbar,
-[here's a quick video showing how](https://youtu.be/NmSEBGbn7Mc))
-1. Get a machine somewhere (GCE, EC2, Digital Ocean) with Docker and systemd
-1. Copy systemd files over:
+1.  Get yourself a hardware wallet, such as a
+    [Ledger](https://www.ledgerwallet.com/) or [TREZOR](https://trezor.io/).
+1.  Set up a Coinbase Pro account, and link your bank account
+1.  Create a Coinbase Pro API key with view, trade, manage, transfer, and bypass-2fa
+    permissions
+1.  Determine the payment_method_id value by using the
+    [Coinbase Pro API](https://docs.pro.coinbase.com/#payment-methods) (you can use your browser's
+    developer toolbar,
+    [here's a quick video showing how](https://youtu.be/NmSEBGbn7Mc))
+1.  Get a machine somewhere (GCE, EC2, Digital Ocean) with Docker and systemd
+1.  Copy systemd files over:
 
         $ sudo cp systemd/optimal-buy-gdax-*.{service,timer} /etc/systemd/system
-1. Edit [`/etc/systemd/system/optimal-buy-gdax-buy.service`](optimal-buy-gdax-buy.service),
-[`/etc/systemd/system/optimal-buy-gdax-buy.timer`](optimal-buy-gdax-buy.timer),
-[`/etc/systemd/system/optimal-buy-gdax-deposit.service`](optimal-buy-gdax-deposit.service), and
-[`/etc/systemd/system/optimal-buy-gdax-deposit.timer`](optimal-buy-gdax-deposit.timer) to your liking. Make sure you:
 
-    * Change the BTC, ETH, and LTC withdrawal addresses to deposit the coins
-    into your wallet (use a Ledger or TREZOR)
-    * Pop in the correct API keys
-    * Check the deposit amount (start with something small, like $150, to make
-    sure it actually works first)
-    * Check the timer dates (it would be sensible to change the hh:mm so your
-    script doesn't run the same time as everyone else's), make sure the deposit
-    timer fires according to your deposit schedule (keeping in mind that ACH
-    takes 2-5 business days to clear, typically)
-    * Consider specifying your external balances in order to accurately
-    calculate the weights and amounts to purchase
+1.  Edit [`/etc/systemd/system/optimal-buy-gdax-buy.service`](optimal-buy-gdax-buy.service),
+    [`/etc/systemd/system/optimal-buy-gdax-buy.timer`](optimal-buy-gdax-buy.timer),
+    [`/etc/systemd/system/optimal-buy-gdax-deposit.service`](optimal-buy-gdax-deposit.service), and
+    [`/etc/systemd/system/optimal-buy-gdax-deposit.timer`](optimal-buy-gdax-deposit.timer) to your liking. Make sure you:
 
-1. Enable the systemd units:
+        * Change the BTC, ETH, and LTC withdrawal addresses to deposit the coins
+        into your wallet (use a Ledger or TREZOR)
+        * Pop in the correct API keys
+        * Check the deposit amount (start with something small, like $150, to make
+        sure it actually works first)
+        * Check the timer dates (it would be sensible to change the hh:mm so your
+        script doesn't run the same time as everyone else's), make sure the deposit
+        timer fires according to your deposit schedule (keeping in mind that ACH
+        takes 2-5 business days to clear, typically)
+        * Consider specifying your external balances in order to accurately
+        calculate the weights and amounts to purchase
+
+1.  Enable the systemd units:
 
         $ sudo systemctl enable optimal-buy-gdax-buy.service
         $ sudo systemctl enable optimal-buy-gdax-buy.timer
         $ sudo systemctl enable optimal-buy-gdax-deposit.service
         $ sudo systemctl enable optimal-buy-gdax-deposit.timer
 
-1. Start the systemd timers:
-        $ sudo systemctl start optimal-buy-gdax-buy.timer
-        $ sudo systemctl start optimal-buy-gdax-deposit.timer
+1.  Start the systemd timers:
+    $sudo systemctl start optimal-buy-gdax-buy.timer$ sudo systemctl start optimal-buy-gdax-deposit.timer
 
-1. Enjoy!
+1.  Enjoy!
+
+1.  Alternatively, if you don't want to use Docker, install the package with `pip install optimal-buy-gdax`.
 
 # Configuration
 
@@ -188,59 +190,58 @@ developer toolbar,
           }
         }
 
-
 # Details on the orders placed
 
 By default, there are 5 orders placed (for each currency) in steps of 1%,
 starting at a 0.5% discount from the current price. To illustrate, if the
-current price was $100 (per LTC, let's say), and you had $100 to buy, the orders
+current price was $100 (per LTC, let's say), and you had$100 to buy, the orders
 would look like this:
 
-Order | Size      | Price
-------|-----------|------
-1 | 0.2010 LTC | $99.5
-2 | 0.2030 LTC | $98.5
-3 | 0.2051 LTC | $97.5
-4 | 0.2072 LTC | $96.5
-5 | 0.2094 LTC | $95.5
+| Order | Size       | Price  |
+| ----- | ---------- | ------ |
+| 1     | 0.2010 LTC | \$99.5 |
+| 2     | 0.2030 LTC | \$98.5 |
+| 3     | 0.2051 LTC | \$97.5 |
+| 4     | 0.2072 LTC | \$96.5 |
+| 5     | 0.2094 LTC | \$95.5 |
 
 Furthermore, the amount of each currency to buy will be based on the current
 market cap weighting of each coin. For example, at the time of writing the
 weights are:
 
-Coin | Market Cap (USD) | Weight
------|------------------|-------
-BTC | $195,824,365,435 | 0.791
-ETH | $46,080,472,372 | 0.186
-LTC | $5,592,776,540 | 0.023
+| Coin | Market Cap (USD)  | Weight |
+| ---- | ----------------- | ------ |
+| BTC  | \$195,824,365,435 | 0.791  |
+| ETH  | \$46,080,472,372  | 0.186  |
+| LTC  | \$5,592,776,540   | 0.023  |
 
-So if your USD account had $1000 to invest, the amount invested in each would
+So if your USD account had \$1000 to invest, the amount invested in each would
 become:
 
-Coin | Weight | Amount Invested
------|--------|----------------
-BTC | 0.791 | $791
-ETH | 0.186 | $186
-LTC | 0.023 | $23
+| Coin | Weight | Amount Invested |
+| ---- | ------ | --------------- |
+| BTC  | 0.791  | \$791           |
+| ETH  | 0.186  | \$186           |
+| LTC  | 0.023  | \$23            |
 
 # Caveats/limitations
 
-* If you try to trade manually or using some other bot at the same time,
-you're probably going to have a bad time
-* You might have a few dollars (<$25, you can change this with
-`--withdrawal-amount`) sitting in your account at all times,
-even when all orders have been filled because it's not always possible to
-fill all orders and there may be small rounding errors (on the order of cents)
-* It makes a best effort with minimal complexity to invest all of your fiat,
-but it may not be possible to fill all orders right away
-* It may take a few days for the market to drop enough for the buys to fill
-* If the market experiences a significant bull run, your orders won't be
-filled, but it will reset every 24h (using the default buy timer)
+- If you try to trade manually or using some other bot at the same time,
+  you're probably going to have a bad time
+- You might have a few dollars (<\$25, you can change this with
+  `--withdrawal-amount`) sitting in your account at all times,
+  even when all orders have been filled because it's not always possible to
+  fill all orders and there may be small rounding errors (on the order of cents)
+- It makes a best effort with minimal complexity to invest all of your fiat,
+  but it may not be possible to fill all orders right away
+- It may take a few days for the market to drop enough for the buys to fill
+- If the market experiences a significant bull run, your orders won't be
+  filled, but it will reset every 24h (using the default buy timer)
 
 # Tip jar
 
 If you got some value out of this, please send some coins my way so I can
 retire from my day job:
 
-* BTC: 3EEAE1oKEMnmHGU5Qxibv9mBQyNnes8j8N
-* LTC: 3MxmLzTf4sPsFBGYUnX9MMMbTMeaUSox46
+- BTC: 3EEAE1oKEMnmHGU5Qxibv9mBQyNnes8j8N
+- LTC: 3MxmLzTf4sPsFBGYUnX9MMMbTMeaUSox46
