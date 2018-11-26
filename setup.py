@@ -16,7 +16,7 @@ test_requires = [
 
 setup(
     name='optimal_buy_cbpro',
-    version='1.1.9',
+    version='1.1.10',
     description='Buy the coins, optimally!',
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -40,6 +40,6 @@ setup(
         'test': test_requires,
     },
     dependency_links=[
-        'git+https://github.com/brndnmtthws/coinbasepro-python.git#egg=cbpro'
+        'git+https://github.com/brndnmtthws/coinbasepro-python.git@e4ba196c3416e062ff5497a7d6e148ef874c422f#egg=cbpro'
     ],
 )
