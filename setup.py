@@ -4,7 +4,6 @@ with open('README.md') as f:
     readme = f.read()
 
 requires = [
-    'cbpro',
     'coinmarketcap>=5.0.0',
     'sqlalchemy>=1.2.14',
     'python-dateutil>=2.7.5',
@@ -39,7 +38,4 @@ setup(
     extras_require={
         'test': test_requires,
     },
-    dependency_links=[
-        'git+https://github.com/brndnmtthws/coinbasepro-python.git@e4ba196c3416e062ff5497a7d6e148ef874c422f#egg=cbpro'
-    ],
 )
