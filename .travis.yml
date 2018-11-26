@@ -9,7 +9,7 @@ deploy:
     tags: true
 env:
   global:
-    - CC_TEST_REPORTER_ID=0d9e49a0de99a221037b9f13acd7805d1756970f766e94f1a3eb9e0fd5a4327a
+    - CC_TEST_REPORTER_ID=e64a4a0dc31753602cce34e75fe6ff1ce10131381b9eb76d11f63e7c0a913db2
 language: python
 cache: pip
 python:
