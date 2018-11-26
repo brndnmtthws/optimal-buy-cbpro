@@ -4,17 +4,15 @@ with open('README.md') as f:
     readme = f.read()
 
 requires = [
-    'cbpro==1.1.4',
-    'requests==2.20.1',
+    'cbpro>=1.1.4',
     'coinmarketcap>=5.0.3',
-    'sqlalchemy==1.2.14',
-    'python-dateutil==2.7.5',
+    'sqlalchemy>=1.2.14',
+    'python-dateutil>=2.7.5',
 ]
 test_requires = [
     'pytest-cov',
     'pytest>=3.5.0',
 ]
-
 
 setup(
     name='optimal_buy_cbpro',
