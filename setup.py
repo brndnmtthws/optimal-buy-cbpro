@@ -16,7 +16,7 @@ test_requires = [
 
 setup(
     name='optimal_buy_cbpro',
-    version='1.1.8',
+    version='1.1.9',
     description='Buy the coins, optimally!',
     long_description=readme,
     long_description_content_type="text/markdown",
