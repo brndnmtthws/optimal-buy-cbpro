@@ -5,7 +5,7 @@ with open('README.md') as f:
 
 setup(
     name='optimal_buy_gdax',
-    version='1.1.4',
+    version='1.1.5',
     description='Buy the coins, optimally!',
     long_description=readme,
     long_description_content_type="text/markdown",
