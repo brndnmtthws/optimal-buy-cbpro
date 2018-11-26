@@ -1,0 +1,15 @@
+*.DS_Store
+.idea
+*.pyc
+example.py
+build/
+dist/
+*.egg-info/
+*.rst
+venv/
+*log.txt
+cbpro/__pycache__/
+.cache/
+.coverage
+tests/__pycache__/
+.pytest_cache
