@@ -4,18 +4,18 @@ with open('README.md') as f:
     readme = f.read()
 
 setup(
-    name='optimal_buy_gdax',
+    name='optimal_buy_cbpro',
     version='1.1.5',
     description='Buy the coins, optimally!',
     long_description=readme,
     long_description_content_type="text/markdown",
     author='Brenden Matthews',
     author_email='brenden@diddyinc.com',
-    url='https://github.com/brndnmtthws/optimal-buy-gdax',
+    url='https://github.com/brndnmtthws/optimal-buy-cbpro',
     packages=find_packages(exclude=('tests', 'docs')),
     entry_points={
         'console_scripts':
-            ['optimal-buy-gdax=optimal_buy_gdax.optimal_buy_gdax:main'],
+            ['optimal-buy-cbpro=optimal_buy_cbpro.optimal_buy_cbpro:main'],
     },
     classifiers=(
         "Programming Language :: Python :: 3",

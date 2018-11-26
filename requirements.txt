@@ -1,5 +1,5 @@
-gdax
-requests
-coinmarketcap>=5.0.0
-sqlalchemy
-python-dateutil
+cbpro==1.1.4
+requests==2.20.1
+coinmarketcap>=5.0.3
+sqlalchemy==1.2.14
+python-dateutil==2.7.5

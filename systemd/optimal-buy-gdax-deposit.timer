@@ -1,9 +1,9 @@
 [Unit]
-Description=GDAX deposit timer
+Description=cbpro deposit timer
 
 [Timer]
 OnCalendar=Mon *-*-* 00:00:00
-Unit=optimal-buy-gdax-deposit.service
+Unit=optimal-buy-cbpro-deposit.service
 
 [Install]
 WantedBy=multi-user.target

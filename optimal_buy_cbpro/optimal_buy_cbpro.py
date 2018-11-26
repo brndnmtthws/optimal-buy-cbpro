@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import gdax
+import cbpro
 import argparse
 import sys
 import math
@@ -43,7 +43,7 @@ def get_weights(coins, fiat_currency):
     return weights
 
 
-def deposit(args, gdax_client, db_session):
+def deposit(args, cbpro_client, db_session):
     if args.amount is None:
         print('please specify deposit amount with `--amount`')
         sys.exit(1)
@@ -52,9 +52,9 @@ def deposit(args, gdax_client, db_session):
         sys.exit(1)
     print('performing deposit, amount={} {}'.format(args.amount,
                                                     args.fiat_currency))
-    deposit = gdax_client.deposit(payment_method_id=args.payment_method_id,
-                                  amount=args.amount,
-                                  currency=args.fiat_currency)
+    deposit = cbpro_client.deposit(payment_method_id=args.payment_method_id,
+                                   amount=args.amount,
+                                   currency=args.fiat_currency)
     print('deposit={}'.format(deposit))
     if 'id' in deposit:
         db_session.add(
@@ -63,14 +63,14 @@ def deposit(args, gdax_client, db_session):
                 amount=args.amount,
                 currency=args.fiat_currency,
                 payout_at=dateutil.parser.parse(deposit['payout_at']),
-                gdax_deposit_id=deposit['id']
+                cbpro_deposit_id=deposit['id']
             )
         )
         db_session.commit()
 
 
-def get_products(gdax_client, coins, fiat_currency):
-    products = gdax_client.get_products()
+def get_products(cbpro_client, coins, fiat_currency):
+    products = cbpro_client.get_products()
     for p in products:
         if p['base_currency'] in coins \
                 and p['quote_currency'] == fiat_currency:
@@ -79,10 +79,10 @@ def get_products(gdax_client, coins, fiat_currency):
     return products
 
 
-def get_prices(gdax_client, coins, fiat_currency):
+def get_prices(cbpro_client, coins, fiat_currency):
     prices = {}
     for c in coins:
-        ticker = gdax_client.get_product_ticker(
+        ticker = cbpro_client.get_product_ticker(
             product_id='{}-{}'.format(c, fiat_currency))
         if 'price' not in ticker:
             raise(
@@ -125,10 +125,10 @@ def get_account(accounts, currency):
             return a
 
 
-def set_buy_order(args, coin, price, size, gdax_client, db_session):
+def set_buy_order(args, coin, price, size, cbpro_client, db_session):
     print('placing order coin={0} price={1:.2f} size={2:.8f}'.format(
         coin, price, size))
-    order = gdax_client.buy(
+    order = cbpro_client.buy(
         price='{0:.2f}'.format(price),
         size='{0:.8f}'.format(size),
         type='limit',
@@ -142,7 +142,7 @@ def set_buy_order(args, coin, price, size, gdax_client, db_session):
                 currency=coin,
                 size=size,
                 price=price,
-                gdax_order_id=order['id'],
+                cbpro_order_id=order['id'],
                 created_at=dateutil.parser.parse(order['created_at'])
             )
         )
@@ -176,7 +176,7 @@ def generate_buy_orders(coins, coin, args, balance_difference_fiat, price):
 
 
 def place_buy_orders(args, balance_difference_fiat, coins, coin, price,
-                     gdax_client, db_session):
+                     cbpro_client, db_session):
     if balance_difference_fiat <= 0.01:
         print('{}: balance_difference_fiat={}, not buying {}'.format(
             coin, balance_difference_fiat, coin))
@@ -190,11 +190,11 @@ def place_buy_orders(args, balance_difference_fiat, coins, coin, price,
     for order in buy_orders:
         set_buy_order(args, coin,
                       order['price'], order['size'],
-                      gdax_client, db_session)
+                      cbpro_client, db_session)
 
 
 def start_buy_orders(args, coins, accounts, prices, fiat_balances,
-                     fiat_amount, gdax_client, db_session):
+                     fiat_amount, cbpro_client, db_session):
     weights = get_weights(coins, args.fiat_currency)
 
     # Determine amount of each coin, in fiat, to buy
@@ -225,19 +225,19 @@ def start_buy_orders(args, coins, accounts, prices, fiat_balances,
 
     for c in coins:
         place_buy_orders(args, amount_to_buy[c], coins, c, prices[c],
-                         gdax_client, db_session)
+                         cbpro_client, db_session)
 
 
-def execute_withdrawal(gdax_client, amount, currency, crypto_address,
+def execute_withdrawal(cbpro_client, amount, currency, crypto_address,
                        db_session):
-    # The GDAX API does something goofy where the account balance
+    # The cbpro API does something goofy where the account balance
     # has more decimal places than the withdrawal API supports, so
     # we have to account for that here. Plus, the format()
     # function will round the float, so we have to do some
     # janky flooring.
     amount = '{0:.9f}'.format(float(amount))[0:-1]
     print('withdrawing {} {} to {}'.format(amount, currency, crypto_address))
-    transaction = gdax_client.crypto_withdraw(
+    transaction = cbpro_client.crypto_withdraw(
         amount=amount,
         currency=currency,
         crypto_address=crypto_address
@@ -249,13 +249,13 @@ def execute_withdrawal(gdax_client, amount, currency, crypto_address,
                 amount=amount,
                 currency=currency,
                 crypto_address=crypto_address,
-                gdax_withdrawal_id=transaction['id']
+                cbpro_withdrawal_id=transaction['id']
             )
         )
         db_session.commit()
 
 
-def withdraw(coins, accounts, gdax_client, db_session):
+def withdraw(coins, accounts, cbpro_client, db_session):
     for coin in coins:
         if 'withdrawal_address' not in coins[coin] or \
                 coins[coin]['withdrawal_address'] is None or \
@@ -268,7 +268,7 @@ def withdraw(coins, accounts, gdax_client, db_session):
             print('{} balance only {}, not withdrawing'.format(
                 coin, account['balance']))
         else:
-            execute_withdrawal(gdax_client,
+            execute_withdrawal(cbpro_client,
                                account['balance'],
                                coin,
                                coins[coin]['withdrawal_address'],
@@ -286,16 +286,16 @@ def get_withdrawn_balances(db_session):
     return withdrawn_balances
 
 
-def buy(args, coins, gdax_client, db_session):
+def buy(args, coins, cbpro_client, db_session):
     print('starting buy and (maybe) withdrawal')
     print('first, cancelling orders')
-    products = get_products(gdax_client, coins, args.fiat_currency)
+    products = get_products(cbpro_client, coins, args.fiat_currency)
     print('products={}'.format(products))
     for c in coins:
-        gdax_client.cancel_all(product='{}-{}'.format(c, args.fiat_currency))
+        cbpro_client.cancel_all(product='{}-{}'.format(c, args.fiat_currency))
     # Check if there's any fiat available to execute a buy
-    accounts = gdax_client.get_accounts()
-    prices = get_prices(gdax_client, coins, args.fiat_currency)
+    accounts = cbpro_client.get_accounts()
+    prices = get_prices(cbpro_client, coins, args.fiat_currency)
     withdrawn_balances = get_withdrawn_balances(db_session)
     print('accounts={}'.format(accounts))
     print('prices={}'.format(prices))
@@ -310,12 +310,12 @@ def buy(args, coins, gdax_client, db_session):
         print('fiat balance above {} {}, buying more'.format(
             args.withdrawal_amount, args.fiat_currency))
         start_buy_orders(args, coins, accounts, prices,
-                         fiat_balances, fiat_amount, gdax_client, db_session)
+                         fiat_balances, fiat_amount, cbpro_client, db_session)
     else:
         print('only {} {} fiat balance remaining, withdrawing'
               ' coins without buying'.format(
                   fiat_amount, args.fiat_currency))
-        withdraw(coins, accounts, gdax_client, db_session)
+        withdraw(coins, accounts, cbpro_client, db_session)
 
 
 def main():
@@ -369,8 +369,8 @@ def main():
                         'balance drops below this amount (default: 25)',
                         type=float, default=25)
     parser.add_argument('--db-engine', help='SQLAlchemy DB engine '
-                        '(default: sqlite:///gdax_history.db)',
-                        default='sqlite:///gdax_history.db')
+                        '(default: sqlite:///cbpro_history.db)',
+                        default='sqlite:///cbpro_history.db')
     parser.add_argument('--max-retries', help='Maximum number of times to '
                         'retry if there are any failures, such as API issues '
                         '(default: 3)', type=int, default=3)
@@ -383,8 +383,8 @@ def main():
     coins = json.loads(args.coins)
     print("--coins='{}'".format(json.dumps(coins, separators=(',', ':'))))
 
-    gdax_client = gdax.AuthenticatedClient(args.key, args.b64secret,
-                                           args.passphrase, args.api_url)
+    cbpro_client = cbpro.AuthenticatedClient(args.key, args.b64secret,
+                                             args.passphrase, args.api_url)
     db_session = get_session(args.db_engine)
 
     retry = 0
@@ -394,9 +394,9 @@ def main():
         print('attempt {} of {}'.format(retry, args.max_retries))
         try:
             if args.mode == 'deposit':
-                deposit(args, gdax_client, db_session)
+                deposit(args, cbpro_client, db_session)
             elif args.mode == 'buy':
-                buy(args, coins, gdax_client, db_session)
+                buy(args, coins, cbpro_client, db_session)
             sys.stdout.flush()
             sys.exit(0)
         except Exception as e:

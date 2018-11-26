@@ -9,22 +9,22 @@ deploy:
     tags: true
 env:
   global:
-  - CC_TEST_REPORTER_ID=0d9e49a0de99a221037b9f13acd7805d1756970f766e94f1a3eb9e0fd5a4327a
+    - CC_TEST_REPORTER_ID=e64a4a0dc31753602cce34e75fe6ff1ce10131381b9eb76d11f63e7c0a913db2
 language: python
 cache: pip
 python:
-- '3.5'
-- '3.6'
-- '3.7'
+  - "3.5"
+  - "3.6"
+  - "3.7"
 install:
-- pip install -r requirements.txt
-- pip install -r test-requirements.txt
+  - pip install -r requirements.txt
+  - pip install -r test-requirements.txt
 before_script:
-- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
-  > ./cc-test-reporter
-- chmod +x ./cc-test-reporter
-- "./cc-test-reporter before-build"
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+    > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - "./cc-test-reporter before-build"
 script:
-- py.test --cov=optimal_buy_gdax --cov-report xml
+  - py.test --cov=optimal_buy_cbpro --cov-report xml
 after_script:
-- "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
+  - "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
