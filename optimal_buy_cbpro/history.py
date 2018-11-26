@@ -14,7 +14,7 @@ class Order(Base):
     currency = Column(String)
     price = Column(Float)
     size = Column(Float)
-    gdax_order_id = Column(String)
+    cbpro_order_id = Column(String)
     created_at = Column(DateTime)
 
 
@@ -25,7 +25,7 @@ class Withdrawal(Base):
     currency = Column(String)
     amount = Column(Float)
     crypto_address = Column(String)
-    gdax_withdrawal_id = Column(String)
+    cbpro_withdrawal_id = Column(String)
 
 
 class Deposit(Base):
@@ -36,7 +36,7 @@ class Deposit(Base):
     amount = Column(Float)
     payment_method_id = Column(String)
     payout_at = Column(DateTime)
-    gdax_deposit_id = Column(String)
+    cbpro_deposit_id = Column(String)
 
 
 def get_session(engine):

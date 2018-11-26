@@ -2,9 +2,9 @@
 import pytest
 import math
 import json
-import gdax
+import cbpro
 
-from .context import optimal_buy_gdax
+from optimal_buy_cbpro import optimal_buy_cbpro
 
 
 @pytest.fixture
@@ -30,28 +30,29 @@ def args():
 
 
 def test_get_weights(coins):
-    weights = optimal_buy_gdax.get_weights(coins, 'USD')
+    weights = optimal_buy_cbpro.get_weights(coins, 'USD')
     assert 'BTC' in weights
     assert weights['BTC'] == 1
 
 
 def test_get_products(coins):
-    gdax_client = gdax.PublicClient()
-    products = optimal_buy_gdax.get_products(gdax_client, coins, 'USD')
+    cbpro_client = cbpro.PublicClient()
+    products = optimal_buy_cbpro.get_products(cbpro_client, coins, 'USD')
     assert len(products) >= 0
     assert 'BTC' in [product['base_currency'] for product in products]
 
 
 def test_get_prices(coins):
-    gdax_client = gdax.PublicClient()
-    prices = optimal_buy_gdax.get_prices(gdax_client, coins, 'USD')
+    cbpro_client = cbpro.PublicClient()
+    prices = optimal_buy_cbpro.get_prices(cbpro_client, coins, 'USD')
     assert len(prices) >= 0
     assert 'BTC' in prices
     assert prices['BTC'] >= 1
 
+
 def test_generate_orders(coins, args):
-    orders = optimal_buy_gdax.generate_buy_orders(coins,
-                                                  'BTC', args, 500, 5000)
+    orders = optimal_buy_cbpro.generate_buy_orders(coins,
+                                                   'BTC', args, 500, 5000)
     assert len(orders) == 5
     assert orders[0]['price'] == 4975.0
     assert orders[1]['price'] == 4970.0

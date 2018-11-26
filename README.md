@@ -1,8 +1,8 @@
-# optimal-buy-gdax
+# optimal-buy-cbpro (formerly optimal-buy-gdax)
 
-[![Build Status](https://travis-ci.org/brndnmtthws/optimal-buy-gdax.svg?branch=master)](https://travis-ci.org/brndnmtthws/optimal-buy-gdax) [![Maintainability](https://api.codeclimate.com/v1/badges/d3a104f8a9855313e799/maintainability)](https://codeclimate.com/github/brndnmtthws/optimal-buy-gdax/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/d3a104f8a9855313e799/test_coverage)](https://codeclimate.com/github/brndnmtthws/optimal-buy-gdax/test_coverage) [![PyPI version](https://badge.fury.io/py/optimal-buy-gdax.svg)](https://badge.fury.io/py/optimal-buy-gdax)
+[![Build Status](https://travis-ci.org/brndnmtthws/optimal-buy-cbpro.svg?branch=master)](https://travis-ci.org/brndnmtthws/optimal-buy-cbpro) [![Maintainability](https://api.codeclimate.com/v1/badges/d3a104f8a9855313e799/maintainability)](https://codeclimate.com/github/brndnmtthws/optimal-buy-cbpro/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/d3a104f8a9855313e799/test_coverage)](https://codeclimate.com/github/brndnmtthws/optimal-buy-cbpro/test_coverage) [![PyPI version](https://badge.fury.io/py/optimal-buy-cbpro.svg)](https://badge.fury.io/py/optimal-buy-cbpro)
 
-Scheduled buying of BTC, ETH, and LTC from Coinbase Pro optimally! Be your own index/hedge fund, and stop paying those greasy management fees.
+Scheduled buying of BTC, ETH, and LTC from Coinbase Pro (formerly GDAX) optimally! Be your own index/hedge fund, and stop paying those greasy management fees.
 
 ![crypto](crypto.gif)
 
@@ -24,7 +24,7 @@ the following logic (assuming default values):
      "[Details on the orders placed](#details-on-the-orders-placed)", below)
    - If there isn't enough USD available, place 1 buy order at 0.5% off the
      current price (see
-     "[Order Minimums](https://support.gdax.com/customer/portal/articles/2725970-trading-rules)")
+     "[Order Minimums](https://support.cbpro.com/customer/portal/articles/2725970-trading-rules)")
 1. If the fiat account balance is below \$25 (or whatever you specify), withdraw
    coins to desired addresses
 
@@ -89,12 +89,12 @@ type of funny business.
 1.  Get a machine somewhere (GCE, EC2, Digital Ocean) with Docker and systemd
 1.  Copy systemd files over:
 
-        $ sudo cp systemd/optimal-buy-gdax-*.{service,timer} /etc/systemd/system
+        $ sudo cp systemd/optimal-buy-cbpro-*.{service,timer} /etc/systemd/system
 
-1.  Edit [`/etc/systemd/system/optimal-buy-gdax-buy.service`](optimal-buy-gdax-buy.service),
-    [`/etc/systemd/system/optimal-buy-gdax-buy.timer`](optimal-buy-gdax-buy.timer),
-    [`/etc/systemd/system/optimal-buy-gdax-deposit.service`](optimal-buy-gdax-deposit.service), and
-    [`/etc/systemd/system/optimal-buy-gdax-deposit.timer`](optimal-buy-gdax-deposit.timer) to your liking. Make sure you:
+1.  Edit [`/etc/systemd/system/optimal-buy-cbpro-buy.service`](optimal-buy-cbpro-buy.service),
+    [`/etc/systemd/system/optimal-buy-cbpro-buy.timer`](optimal-buy-cbpro-buy.timer),
+    [`/etc/systemd/system/optimal-buy-cbpro-deposit.service`](optimal-buy-cbpro-deposit.service), and
+    [`/etc/systemd/system/optimal-buy-cbpro-deposit.timer`](optimal-buy-cbpro-deposit.timer) to your liking. Make sure you:
 
     - Change the BTC, ETH, and LTC withdrawal addresses to deposit the coins
       into your wallet (use a Ledger or TREZOR)
@@ -110,21 +110,21 @@ type of funny business.
 
 1.  Enable the systemd units:
 
-        $ sudo systemctl enable optimal-buy-gdax-buy.service
-        $ sudo systemctl enable optimal-buy-gdax-buy.timer
-        $ sudo systemctl enable optimal-buy-gdax-deposit.service
-        $ sudo systemctl enable optimal-buy-gdax-deposit.timer
+        $ sudo systemctl enable optimal-buy-cbpro-buy.service
+        $ sudo systemctl enable optimal-buy-cbpro-buy.timer
+        $ sudo systemctl enable optimal-buy-cbpro-deposit.service
+        $ sudo systemctl enable optimal-buy-cbpro-deposit.timer
 
 1.  Start the systemd timers:
-    $sudo systemctl start optimal-buy-gdax-buy.timer$ sudo systemctl start optimal-buy-gdax-deposit.timer
+    $sudo systemctl start optimal-buy-cbpro-buy.timer$ sudo systemctl start optimal-buy-cbpro-deposit.timer
 
 1.  Enjoy!
 
-1.  Alternatively, if you don't want to use Docker, install the package with `pip install optimal-buy-gdax`.
+1.  Alternatively, if you don't want to use Docker, install the package with `pip install optimal-buy-cbpro`.
 
 # Configuration
 
-    usage: optimal-buy-gdax [-h] --mode MODE [--amount AMOUNT] --key KEY
+    usage: optimal-buy-cbpro [-h] --mode MODE [--amount AMOUNT] --key KEY
                             --b64secret B64SECRET --passphrase PASSPHRASE
                             [--api-url API_URL]
                             [--payment-method-id PAYMENT_METHOD_ID]
@@ -147,7 +147,7 @@ type of funny business.
                             API secret
       --passphrase PASSPHRASE
                             API passphrase
-      --api-url API_URL     API URL (default: https://api.gdax.com)
+      --api-url API_URL     API URL (default: https://api.cbpro.com)
       --payment-method-id PAYMENT_METHOD_ID
                             Payment method ID for fiat deposits
       --starting-discount STARTING_DISCOUNT
@@ -163,7 +163,7 @@ type of funny business.
                             (default: 25)
       --db-engine DB_ENGINE
                             SQLAlchemy DB engine (default:
-                            sqlite:///gdax_history.db)
+                            sqlite:///cbpro_history.db)
       --max-retries MAX_RETRIES
                             Maximum number of times to retry if there are any
                             failures, such as API issues (default: 3)
