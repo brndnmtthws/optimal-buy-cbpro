@@ -4,6 +4,7 @@ with open('README.md') as f:
     readme = f.read()
 
 requires = [
+    'cbpro-notbroken==1.1.5',
     'coinmarketcap>=5.0.0',
     'sqlalchemy>=1.2.14',
     'python-dateutil>=2.7.5',
