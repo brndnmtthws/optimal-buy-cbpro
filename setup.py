@@ -5,7 +5,7 @@ with open('README.md') as f:
 
 setup(
     name='optimal_buy_cbpro',
-    version='1.1.6',
+    version='1.1.7',
     description='Buy the coins, optimally!',
     long_description=readme,
     long_description_content_type="text/markdown",
