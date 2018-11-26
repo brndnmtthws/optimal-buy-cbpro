@@ -292,7 +292,8 @@ def buy(args, coins, cbpro_client, db_session):
     products = get_products(cbpro_client, coins, args.fiat_currency)
     print('products={}'.format(products))
     for c in coins:
-        cbpro_client.cancel_all(product='{}-{}'.format(c, args.fiat_currency))
+        cbpro_client.cancel_all(
+            product_id='{}-{}'.format(c, args.fiat_currency))
     # Check if there's any fiat available to execute a buy
     accounts = cbpro_client.get_accounts()
     prices = get_prices(cbpro_client, coins, args.fiat_currency)
