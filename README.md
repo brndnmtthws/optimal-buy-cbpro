@@ -77,6 +77,11 @@ type of funny business.
 
 # How do I use it?
 
+The package itself can be used as a Docker container, or by installing the
+pip package with `pip install optimal-buy-cbpro`. Using the Docker container
+is recommended to avoid Python environment issues. Instructions for running
+with Docker and systemd are as follows:
+
 1.  Get yourself a hardware wallet, such as a
     [Ledger](https://www.ledgerwallet.com/) or [TREZOR](https://trezor.io/).
 1.  Set up a Coinbase Pro account, and link your bank account
@@ -119,8 +124,6 @@ type of funny business.
     $sudo systemctl start optimal-buy-cbpro-buy.timer$ sudo systemctl start optimal-buy-cbpro-deposit.timer
 
 1.  Enjoy!
-
-1.  Alternatively, if you don't want to use Docker, install the package with `pip install optimal-buy-cbpro`.
 
 # Configuration
 
