@@ -215,14 +215,14 @@ weights are:
 | ETH  | \$46,080,472,372  | 0.186  |
 | LTC  | \$5,592,776,540   | 0.023  |
 
-So if your USD account had \$1000 to invest, the amount invested in each would
+So if your USD account had \$1000, the amount purchased of each would
 become:
 
-| Coin | Weight | Amount Invested |
-| ---- | ------ | --------------- |
-| BTC  | 0.791  | \$791           |
-| ETH  | 0.186  | \$186           |
-| LTC  | 0.023  | \$23            |
+| Coin | Weight | Amount Purchased |
+| ---- | ------ | ---------------- |
+| BTC  | 0.791  | \$791            |
+| ETH  | 0.186  | \$186            |
+| LTC  | 0.023  | \$23             |
 
 # Caveats/limitations
 
@@ -232,7 +232,7 @@ become:
   `--withdrawal-amount`) sitting in your account at all times,
   even when all orders have been filled because it's not always possible to
   fill all orders and there may be small rounding errors (on the order of cents)
-- It makes a best effort with minimal complexity to invest all of your fiat,
+- It makes a best effort with minimal complexity to use all of your fiat,
   but it may not be possible to fill all orders right away
 - It may take a few days for the market to drop enough for the buys to fill
 - If the market experiences a significant bull run, your orders won't be
