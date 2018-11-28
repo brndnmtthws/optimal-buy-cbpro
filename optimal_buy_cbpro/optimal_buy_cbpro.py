@@ -160,13 +160,20 @@ def generate_buy_orders(coins, coin, args, balance_difference_fiat, price):
         max([1, math.floor(
             balance_difference_fiat / (minimum_order_size * price))])
     ])
-    # Set 5 buy orders, in 1% discount increments, starting from 0.5% off
+    # Set 5 buy orders
     amount = math.floor(
         100 * balance_difference_fiat / number_of_orders) / 100.0
     discount = 1 - args.starting_discount
     for i in range(0, number_of_orders):
         discounted_price = price * discount
         size = amount / discounted_price
+
+        # This is janky, but we need to make sure there are no rounding errors,
+        # so we calculate the order size then reverse that calculation again.
+        order_total = math.floor(100 * discounted_price * size) / 100.0
+        # Recalculate the size
+        size = order_total / discounted_price
+
         buy_orders.append({
             'price': discounted_price,
             'size': size
