@@ -150,7 +150,7 @@ def set_buy_order(args, coin, price, size, cbpro_client, db_session):
     return order
 
 
-def generate_buy_orders(coins, coin, args, balance_difference_fiat, price):
+def generate_buy_orders(coins, coin, args, amount_to_buy, price):
     buy_orders = []
     # If the size is <= minimum * 5, set a single buy order, because otherwise
     # it will get rejected
@@ -158,11 +158,11 @@ def generate_buy_orders(coins, coin, args, balance_difference_fiat, price):
     number_of_orders = min([
         args.order_count,
         max([1, math.floor(
-            balance_difference_fiat / (minimum_order_size * price))])
+            amount_to_buy / (minimum_order_size * price))])
     ])
     # Set 5 buy orders
     amount = math.floor(
-        100 * balance_difference_fiat / number_of_orders) / 100.0
+        100 * amount_to_buy / number_of_orders) / 100.0
     discount = 1 - args.starting_discount
     for i in range(0, number_of_orders):
         discounted_price = price * discount
@@ -170,7 +170,12 @@ def generate_buy_orders(coins, coin, args, balance_difference_fiat, price):
 
         # This is janky, but we need to make sure there are no rounding errors,
         # so we calculate the order size then reverse that calculation again.
-        order_total = math.floor(100 * discounted_price * size) / 100.0
+        # We also need to make sure the order total is no greater than the
+        # available fiat.
+        order_total = min([
+            math.floor(100 * discounted_price * size) / 100.0,
+            math.floor(100 * amount_to_buy / number_of_orders) / 100.0,
+        ])
         # Recalculate the size
         size = order_total / discounted_price
 
@@ -182,18 +187,18 @@ def generate_buy_orders(coins, coin, args, balance_difference_fiat, price):
     return buy_orders
 
 
-def place_buy_orders(args, balance_difference_fiat, coins, coin, price,
+def place_buy_orders(args, amount_to_buy, coins, coin, price,
                      cbpro_client, db_session):
-    if balance_difference_fiat <= 0.01:
+    if amount_to_buy <= 0.01:
         print('{}: balance_difference_fiat={}, not buying {}'.format(
-            coin, balance_difference_fiat, coin))
+            coin, amount_to_buy, coin))
         return
     if price <= 0:
         print('price={}, not buying {}'.format(price, coin))
         return
 
     buy_orders = generate_buy_orders(coins, coin, args,
-                                     balance_difference_fiat, price)
+                                     amount_to_buy, price)
     for order in buy_orders:
         set_buy_order(args, coin,
                       order['price'], order['size'],
