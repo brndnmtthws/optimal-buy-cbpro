@@ -226,8 +226,8 @@ def start_buy_orders(args, coins, accounts, prices, fiat_balances,
             sum_to_buy += balance_differences_fiat[coin]
     amount_to_buy = {}
     for coin in balance_differences_fiat:
-        amount_to_buy[coin] = (balance_differences_fiat[coin] / sum_to_buy) * \
-            fiat_amount
+        amount_to_buy[coin] = math.floor(100 * (balance_differences_fiat[coin] / sum_to_buy) *
+                                         fiat_amount) / 100.0
     print('amount_to_buy={}'.format(amount_to_buy))
 
     for c in coins:
