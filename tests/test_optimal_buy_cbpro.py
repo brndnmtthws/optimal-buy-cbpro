@@ -74,17 +74,18 @@ def test_generate_orders_rounding(coins, args):
                                                    'BTC', args, 1000.0, 4155.42)
     assert len(orders) == 5
     assert orders[0]['price'] == 4134.64
-    assert orders[1]['price'] == 4130.49
+    assert orders[1]['price'] == 4130.48
     assert orders[2]['price'] == 4126.33
-    assert orders[3]['price'] == 4122.18
+    assert orders[3]['price'] == 4122.17
     assert orders[4]['price'] == 4118.02
 
-    assert sum([o['size'] * o['price'] for o in orders]) == 1000.0
+    assert math.isclose(sum([o['size'] * o['price']
+                             for o in orders]), 1000.0, abs_tol=0.01)
 
     assert math.isclose(orders[0]['size'], 0.048371805, abs_tol=0.0000001)
-    assert math.isclose(orders[1]['size'], 0.048420405, abs_tol=0.0000001)
+    assert math.isclose(orders[1]['size'], 0.048418101, abs_tol=0.0000001)
     assert math.isclose(orders[2]['size'], 0.048469220, abs_tol=0.0000001)
-    assert math.isclose(orders[3]['size'], 0.048518017, abs_tol=0.0000001)
+    assert math.isclose(orders[3]['size'], 0.048518134, abs_tol=0.0000001)
     assert math.isclose(orders[4]['size'], 0.048567029, abs_tol=0.0000001)
 
 
@@ -96,10 +97,10 @@ def test_generate_orders_rounding2(coins, args):
                                                    'BTC', args, 400.0, 3394.99)
     assert len(orders) == 5
     assert orders[0]['price'] == 3327.09
-    assert orders[1]['price'] == 3302.48
+    assert orders[1]['price'] == 3302.47
     assert orders[2]['price'] == 3277.86
-    assert orders[3]['price'] == 3253.25
-    assert orders[4]['price'] == 3228.64
+    assert orders[3]['price'] == 3253.24
+    assert orders[4]['price'] == 3228.63
 
     assert math.isclose(sum([o['size'] * o['price']
                              for o in orders]), 400.0, abs_tol=0.01)
@@ -109,3 +110,26 @@ def test_generate_orders_rounding2(coins, args):
     assert math.isclose(orders[2]['size'], 0.02440615, abs_tol=0.0000001)
     assert math.isclose(orders[3]['size'], 0.02459080, abs_tol=0.0000001)
     assert math.isclose(orders[4]['size'], 0.02477827, abs_tol=0.0000001)
+
+
+def test_generate_orders_rounding3(coins, args):
+    args.starting_discount = 0.02
+    args.discount_step = 0.00725
+
+    orders = optimal_buy_cbpro.generate_buy_orders(coins,
+                                                   'BTC', args, 500.0, 3630.51)
+    assert len(orders) == 5
+    assert orders[0]['price'] == 3557.89
+    assert orders[1]['price'] == 3531.57
+    assert orders[2]['price'] == 3505.25
+    assert orders[3]['price'] == 3478.93
+    assert orders[4]['price'] == 3452.61
+
+    assert math.isclose(sum([o['size'] * o['price']
+                             for o in orders]), 500.0, abs_tol=0.01)
+
+    assert math.isclose(orders[0]['size'], 0.02810647, abs_tol=0.0000001)
+    assert math.isclose(orders[1]['size'], 0.02831595, abs_tol=0.0000001)
+    assert math.isclose(orders[2]['size'], 0.02852858, abs_tol=0.0000001)
+    assert math.isclose(orders[3]['size'], 0.02874442, abs_tol=0.0000001)
+    assert math.isclose(orders[4]['size'], 0.02896355, abs_tol=0.0000001)

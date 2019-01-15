@@ -165,7 +165,7 @@ def generate_buy_orders(coins, coin, args, amount_to_buy, price):
         100 * amount_to_buy / number_of_orders) / 100.0
     discount = 1 - args.starting_discount
     for i in range(0, number_of_orders):
-        discounted_price = round(price * discount, 2)
+        discounted_price = math.floor(100.0 * price * discount) / 100.0
         size = amount / discounted_price
 
         # This is janky, but we need to make sure there are no rounding errors,
