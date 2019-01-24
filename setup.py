@@ -5,9 +5,9 @@ with open('README.md') as f:
 
 requires = [
     'cbpro-notbroken==1.1.5',
-    'coinmarketcap>=5.0.0',
     'sqlalchemy>=1.2.14',
     'python-dateutil>=2.7.5',
+    'requests>=2.21.0',
 ]
 test_requires = [
     'pytest-cov',

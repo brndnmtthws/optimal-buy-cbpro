@@ -7,29 +7,25 @@ import math
 import time
 import dateutil.parser
 import json
+import requests
 from .history import Order, Deposit, Withdrawal, get_session
-from coinmarketcap import Market
 from requests.exceptions import HTTPError
 
 
 def get_weights(coins, fiat_currency):
-    coinmarketcap = Market()
-
     market_cap = {}
-    for c in coins:
-        try:
-            listings = coinmarketcap.listings()
-            print(listings['data'][0])
-            id = [item['id'] for item in listings['data']
-                  if item['symbol'] == c][0]
-            ticker = coinmarketcap.ticker(id)
-            print(ticker)
-            market_cap[c] = \
-                float(ticker['data']['quotes'][fiat_currency]['market_cap'])
-        except HTTPError as e:
-            print('caught exception when fetching ticker for {} with name={}'
-                  .format(c, coins[c]['name']))
-            raise e
+    try:
+        response = requests.get('https://api.coincap.io/v2/assets')
+        assets = response.json()
+        coin_data = {}
+        for coin in assets['data']:
+            coin_data[coin['symbol']] = coin
+        for c in coins:
+            market_cap[c] = float(coin_data[c]['marketCapUsd'])
+    except HTTPError as e:
+        print('caught exception when fetching ticker for {} with name={}'
+              .format(c, coins[c]['name']))
+        raise e
 
     total_market_cap = sum(market_cap.values())
 
