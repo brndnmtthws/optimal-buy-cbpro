@@ -27,3 +27,6 @@ script:
   - py.test --cov=optimal_buy_cbpro --cov-report xml
 after_script:
   - "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
+branches:
+  only:
+    - master
