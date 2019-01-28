@@ -147,7 +147,11 @@ def set_buy_order(args, coin, price, size, cbpro_client, db_session):
 
 
 def generate_buy_orders(coins, coin, args, amount_to_buy, price):
+    from decimal import Decimal, getcontext, ROUND_DOWN
+    getcontext().prec = 8
+    getcontext().rounding = ROUND_DOWN
     buy_orders = []
+
     # If the size is <= minimum * 5, set a single buy order, because otherwise
     # it will get rejected
     minimum_order_size = coins[coin].get('minimum_order_size', 0.01)
@@ -156,28 +160,20 @@ def generate_buy_orders(coins, coin, args, amount_to_buy, price):
         max([1, math.floor(
             amount_to_buy / (minimum_order_size * price))])
     ])
+
     # Set 5 buy orders
-    amount = math.floor(
-        100 * amount_to_buy / number_of_orders) / 100.0
+    amount = Decimal(math.floor(
+        100 * amount_to_buy / number_of_orders)) / Decimal(100)
     discount = 1 - args.starting_discount
-    for i in range(0, number_of_orders):
-        discounted_price = math.floor(100.0 * price * discount) / 100.0
+
+    for _ in range(0, number_of_orders):
+        discounted_price = Decimal(math.floor(
+            100.0 * price * discount)) / Decimal(100)
         size = amount / discounted_price
 
-        # This is janky, but we need to make sure there are no rounding errors,
-        # so we calculate the order size then reverse that calculation again.
-        # We also need to make sure the order total is no greater than the
-        # available fiat.
-        order_total = min([
-            math.floor(100 * discounted_price * size) / 100.0,
-            math.floor(100 * amount_to_buy / number_of_orders) / 100.0,
-        ])
-        # Recalculate the size
-        size = order_total / discounted_price
-
         buy_orders.append({
-            'price': discounted_price,
-            'size': size
+            'price': float(discounted_price),
+            'size': float(size),
         })
         discount = discount - args.discount_step
     return buy_orders
