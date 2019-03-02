@@ -133,7 +133,7 @@ def set_buy_order(args, coin, price, size, cbpro_client, db_session):
             post_only='true',
         )
     else:
-        print('placing order coin={0} price={1:.2f} size={2:.1f}'.format(
+        print('placing order coin={0} price={1:.2f} size={2:.8f}'.format(
             coin, price, size))
         order = cbpro_client.buy(
             price='{0:.2f}'.format(price),
