@@ -127,7 +127,7 @@ def set_buy_order(args, coin, price, size, cbpro_client, db_session):
             coin, price, size))
         order = cbpro_client.buy(
             price='{0:.2f}'.format(price),
-            size='{0:.8f}'.format(size),
+            size='{0:.0f}'.format(size),
             order_type='limit',
             product_id='{}-{}'.format(coin, args.fiat_currency),
             post_only='true',
@@ -137,7 +137,7 @@ def set_buy_order(args, coin, price, size, cbpro_client, db_session):
             coin, price, size))
         order = cbpro_client.buy(
             price='{0:.2f}'.format(price),
-            size='{0:.1f}'.format(size),
+            size='{0:.8f}'.format(size),
             order_type='limit',
             product_id='{}-{}'.format(coin, args.fiat_currency),
             post_only='true',
