@@ -122,15 +122,27 @@ def get_account(accounts, currency):
 
 
 def set_buy_order(args, coin, price, size, cbpro_client, db_session):
-    print('placing order coin={0} price={1:.2f} size={2:.8f}'.format(
-        coin, price, size))
-    order = cbpro_client.buy(
-        price='{0:.2f}'.format(price),
-        size='{0:.8f}'.format(size),
-        order_type='limit',
-        product_id='{}-{}'.format(coin, args.fiat_currency),
-        post_only='true',
-    )
+    if coin == 'XRP':
+        print('placing order coin={0} price={1:.2f} size={2:.8f}'.format(
+            coin, price, size))
+        order = cbpro_client.buy(
+            price='{0:.2f}'.format(price),
+            size='{0:.8f}'.format(size),
+            order_type='limit',
+            product_id='{}-{}'.format(coin, args.fiat_currency),
+            post_only='true',
+        )
+    else:
+        print('placing order coin={0} price={1:.2f} size={2:.1f}'.format(
+            coin, price, size))
+        order = cbpro_client.buy(
+            price='{0:.2f}'.format(price),
+            size='{0:.1f}'.format(size),
+            order_type='limit',
+            product_id='{}-{}'.format(coin, args.fiat_currency),
+            post_only='true',
+        )
+
     print('order={}'.format(order))
     if 'id' in order:
         db_session.add(
