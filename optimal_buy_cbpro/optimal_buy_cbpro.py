@@ -166,7 +166,7 @@ def generate_buy_orders(coins, coin, args, amount_to_buy, price):
 
     # If the size is <= minimum * 5, set a single buy order, because otherwise
     # it will get rejected
-    minimum_order_size = coins[coin].get('minimum_order_size', 0.01)
+    minimum_order_size = coins[coin].get('minimum_order_size', 0.001)
     number_of_orders = min([
         args.order_count,
         max([1, math.floor(
