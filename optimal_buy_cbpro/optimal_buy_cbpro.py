@@ -123,7 +123,7 @@ def get_account(accounts, currency):
 
 def set_buy_order(args, coin, price, size, cbpro_client, db_session):
     if coin == 'XRP':
-        print('placing order coin={0} price={1:.4f} size={2:.8f}'.format(
+        print('Placing order coin={0} price={1:.4f} size={2:.8f}'.format(
             coin, price, size))
         order = cbpro_client.buy(
             price='{0:.4f}'.format(price),
@@ -192,8 +192,6 @@ def generate_buy_orders(coins, coin, args, amount_to_buy, price):
             'size': float(size),
         })
         discount = discount - args.discount_step
-    print('Prices = {} generate_buy_orders function'.format(price))
-
     return buy_orders
 
 
@@ -214,8 +212,6 @@ def place_buy_orders(args, amount_to_buy, coins, coin, price,
                       order['price'], order['size'],
                       cbpro_client, db_session)
         
-    print('Prices = {} place_buy_orders function'.format(price))
-
 
 def start_buy_orders(args, coins, accounts, prices, fiat_balances,
                      fiat_amount, cbpro_client, db_session):
@@ -250,8 +246,6 @@ def start_buy_orders(args, coins, accounts, prices, fiat_balances,
     for c in coins:
         place_buy_orders(args, amount_to_buy[c], coins, c, prices[c],
                          cbpro_client, db_session)
-        
-    print('Prices = {} start_buy_orders function'.format(prices))
 
 
 def execute_withdrawal(cbpro_client, amount, currency, crypto_address,
@@ -343,8 +337,6 @@ def buy(args, coins, cbpro_client, db_session):
               ' coins without buying'.format(
                   fiat_amount, args.fiat_currency))
         withdraw(coins, accounts, cbpro_client, db_session)
-        
-    print('Prices = {} buy function'.format(prices))
 
 
 def main():
