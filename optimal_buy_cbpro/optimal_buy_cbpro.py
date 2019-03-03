@@ -174,13 +174,13 @@ def generate_buy_orders(coins, coin, args, amount_to_buy, price):
     ])
 
     # Set 5 buy orders
-    amount = Decimal(
-        100 * amount_to_buy / number_of_orders) / Decimal(100)
+    amount = Decimal(math.floor(
+        100 * amount_to_buy / number_of_orders)) / Decimal(100)
     discount = 1 - args.starting_discount
 
     for _ in range(0, number_of_orders):
-        discounted_price = Decimal(math.floor(
-            100.0 * price * discount)) / Decimal(100)
+        discounted_price = Decimal(
+            100.0 * price * discount) / Decimal(100)
         size = amount / discounted_price
 
         buy_orders.append({
