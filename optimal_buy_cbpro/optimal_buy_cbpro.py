@@ -155,6 +155,10 @@ def set_buy_order(args, coin, price, size, cbpro_client, db_session):
             )
         )
         db_session.commit()
+    
+    print('Prices = {} set_buy_order function'.format(prices))
+
+    
     return order
 
 
@@ -188,6 +192,8 @@ def generate_buy_orders(coins, coin, args, amount_to_buy, price):
             'size': float(size),
         })
         discount = discount - args.discount_step
+    print('Prices = {} generate_buy_orders function'.format(prices))
+
     return buy_orders
 
 
@@ -207,6 +213,8 @@ def place_buy_orders(args, amount_to_buy, coins, coin, price,
         set_buy_order(args, coin,
                       order['price'], order['size'],
                       cbpro_client, db_session)
+        
+    print('Prices = {} place_buy_orders function'.format(prices))
 
 
 def start_buy_orders(args, coins, accounts, prices, fiat_balances,
@@ -242,6 +250,8 @@ def start_buy_orders(args, coins, accounts, prices, fiat_balances,
     for c in coins:
         place_buy_orders(args, amount_to_buy[c], coins, c, prices[c],
                          cbpro_client, db_session)
+        
+    print('Prices = {} start_buy_orders function'.format(prices))
 
 
 def execute_withdrawal(cbpro_client, amount, currency, crypto_address,
@@ -334,7 +344,7 @@ def buy(args, coins, cbpro_client, db_session):
                   fiat_amount, args.fiat_currency))
         withdraw(coins, accounts, cbpro_client, db_session)
         
-    print('prices={} buy function'.format(prices))
+    print('Prices = {} buy function'.format(prices))
 
 
 def main():
