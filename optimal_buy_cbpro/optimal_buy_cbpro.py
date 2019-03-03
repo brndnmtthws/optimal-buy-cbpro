@@ -333,6 +333,8 @@ def buy(args, coins, cbpro_client, db_session):
               ' coins without buying'.format(
                   fiat_amount, args.fiat_currency))
         withdraw(coins, accounts, cbpro_client, db_session)
+        
+    print('prices={} buy function'.format(prices))
 
 
 def main():
