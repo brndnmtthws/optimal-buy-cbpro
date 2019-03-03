@@ -122,8 +122,9 @@ def get_account(accounts, currency):
 
 
 def set_buy_order(args, coin, price, size, cbpro_client, db_session):
+    print(price)
     if coin == 'XRP':
-        print('Placing order coin={0} price={1:.4f} size={2:.8f}'.format(
+        print('placing order coin={0} price={1:.4f} size={2:.8f}'.format(
             coin, price, size))
         order = cbpro_client.buy(
             price='{0:.4f}'.format(price),
@@ -201,15 +202,12 @@ def place_buy_orders(args, amount_to_buy, coins, coin, price,
         print('price={}, not buying {}'.format(price, coin))
         return
     
-    print('Prices 1 = {} place_buy_orders function'.format(price))
     buy_orders = generate_buy_orders(coins, coin, args,
                                      amount_to_buy, price)
-    print('Prices 2 = {} place_buy_orders function'.format(price))
     for order in buy_orders:
         set_buy_order(args, coin,
                       order['price'], order['size'],
                       cbpro_client, db_session)
-    print('Prices 3 = {} place_buy_orders function'.format(price))
         
 
 def start_buy_orders(args, coins, accounts, prices, fiat_balances,
