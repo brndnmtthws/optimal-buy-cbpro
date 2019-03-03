@@ -214,7 +214,7 @@ def place_buy_orders(args, amount_to_buy, coins, coin, price,
                       order['price'], order['size'],
                       cbpro_client, db_session)
         
-    print('Prices = {} place_buy_orders function'.format(prices))
+    print('Prices = {} place_buy_orders function'.format(price))
 
 
 def start_buy_orders(args, coins, accounts, prices, fiat_balances,
