@@ -200,14 +200,14 @@ def place_buy_orders(args, amount_to_buy, coins, coin, price,
     if price <= 0:
         print('price={}, not buying {}'.format(price, coin))
         return
-    
+
     buy_orders = generate_buy_orders(coins, coin, args,
                                      amount_to_buy, price)
     for order in buy_orders:
         set_buy_order(args, coin,
                       order['price'], order['size'],
                       cbpro_client, db_session)
-        
+
 
 def start_buy_orders(args, coins, accounts, prices, fiat_balances,
                      fiat_amount, cbpro_client, db_session):
