@@ -160,7 +160,7 @@ def set_buy_order(args, coin, price, size, cbpro_client, db_session):
 
 def generate_buy_orders(coins, coin, args, amount_to_buy, price):
     from decimal import Decimal, getcontext, ROUND_DOWN
-    getcontext().prec = 8
+    getcontext().prec = 4
     getcontext().rounding = ROUND_DOWN
     buy_orders = []
 
@@ -174,8 +174,8 @@ def generate_buy_orders(coins, coin, args, amount_to_buy, price):
     ])
 
     # Set 5 buy orders
-    amount = Decimal(math.floor(
-        100 * amount_to_buy / number_of_orders)) / Decimal(100)
+    amount = Decimal(
+        100 * amount_to_buy / number_of_orders) / Decimal(100)
     discount = 1 - args.starting_discount
 
     for _ in range(0, number_of_orders):
@@ -203,7 +203,6 @@ def place_buy_orders(args, amount_to_buy, coins, coin, price,
     
     buy_orders = generate_buy_orders(coins, coin, args,
                                      amount_to_buy, price)
-    print(buy_orders)
     for order in buy_orders:
         set_buy_order(args, coin,
                       order['price'], order['size'],
