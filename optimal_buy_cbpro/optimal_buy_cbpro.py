@@ -133,10 +133,10 @@ def set_buy_order(args, coin, price, size, cbpro_client, db_session):
             post_only='true',
         )
     else:
-        print('placing order coin={0} price={1:.2f} size={2:.8f}'.format(
+        print('placing order coin={0} price={1:.4f} size={2:.8f}'.format(
             coin, price, size))
         order = cbpro_client.buy(
-            price='{0:.2f}'.format(price),
+            price='{0:.4f}'.format(price),
             size='{0:.8f}'.format(size),
             order_type='limit',
             product_id='{}-{}'.format(coin, args.fiat_currency),
@@ -160,7 +160,7 @@ def set_buy_order(args, coin, price, size, cbpro_client, db_session):
 
 def generate_buy_orders(coins, coin, args, amount_to_buy, price):
     from decimal import Decimal, getcontext, ROUND_DOWN
-    getcontext().prec = 16
+    getcontext().prec = 8
     getcontext().rounding = ROUND_DOWN
     buy_orders = []
 
