@@ -160,13 +160,13 @@ def set_buy_order(args, coin, price, size, cbpro_client, db_session):
 
 def generate_buy_orders(coins, coin, args, amount_to_buy, price):
     from decimal import Decimal, getcontext, ROUND_DOWN
-    getcontext().prec = 8
+    getcontext().prec = 16
     getcontext().rounding = ROUND_DOWN
     buy_orders = []
 
     # If the size is <= minimum * 5, set a single buy order, because otherwise
     # it will get rejected
-    minimum_order_size = coins[coin].get('minimum_order_size', 0.0001)
+    minimum_order_size = coins[coin].get('minimum_order_size', 0.01)
     number_of_orders = min([
         args.order_count,
         max([1, math.floor(
