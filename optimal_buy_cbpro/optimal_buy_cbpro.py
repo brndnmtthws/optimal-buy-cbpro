@@ -156,7 +156,7 @@ def set_buy_order(args, coin, price, size, cbpro_client, db_session):
         )
         db_session.commit()
     
-    print('Prices = {} set_buy_order function'.format(prices))
+    print('Prices = {} set_buy_order function'.format(price))
 
     
     return order
@@ -192,7 +192,7 @@ def generate_buy_orders(coins, coin, args, amount_to_buy, price):
             'size': float(size),
         })
         discount = discount - args.discount_step
-    print('Prices = {} generate_buy_orders function'.format(prices))
+    print('Prices = {} generate_buy_orders function'.format(price))
 
     return buy_orders
 
