@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/brndnmtthws/optimal-buy-cbpro.svg?branch=master)](https://travis-ci.org/brndnmtthws/optimal-buy-cbpro) [![Maintainability](https://api.codeclimate.com/v1/badges/541bae75a95dad098787/maintainability)](https://codeclimate.com/github/brndnmtthws/optimal-buy-cbpro/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/541bae75a95dad098787/test_coverage)](https://codeclimate.com/github/brndnmtthws/optimal-buy-cbpro/test_coverage) [![PyPI version](https://badge.fury.io/py/optimal-buy-cbpro.svg)](https://badge.fury.io/py/optimal-buy-cbpro)
 
-Scheduled buying of BTC, ETH, and LTC from Coinbase Pro (formerly GDAX) optimally! Be your own index/hedge fund, and stop paying those greasy management fees.
+Scheduled buying of BTC, ETH, and LTC from Coinbase Pro (formerly GDAX) optimally!
 
 ![crypto](crypto.gif)
 
@@ -58,14 +58,6 @@ Ideally, this script would help to make sure that when we dip—
 ![dip](buy-the-dip.gif)
 
 **we buy**.
-
-# Will you help me set this up?
-
-Feel free to create a GitHub issue if you need help, and I will help you if it
-doesn't require too much effort on my part. I generally do not provide
-consulting services for free. If you want to hire me, find my contact details
-through the Internet and contact me using whatever your preferred contact method
-is.
 
 # USE AT OWN RISK
 
