@@ -312,8 +312,8 @@ def buy(args, coins, cbpro_client, db_session):
 
     fiat_amount = fiat_balances[args.fiat_currency]
     fee_amount = args.base_fee * fiat_amount
-    fee_amount = int(math.ceil(fee_amount / 100.0)) * \
-        100  # round up to nearest 1/100th
+    # round up to nearest 1/100th
+    fee_amount = int(math.ceil(fee_amount / 100.0)) * 100
     print('reserving {} for fees'.format(fee_amount))
     fiat_amount -= fee_amount
 
