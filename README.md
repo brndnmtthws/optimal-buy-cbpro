@@ -129,7 +129,7 @@ with Docker and systemd are as follows:
                             [--fiat-currency FIAT_CURRENCY]
                             [--withdrawal-amount WITHDRAWAL_AMOUNT]
                             [--db-engine DB_ENGINE] [--max-retries MAX_RETRIES]
-                            [--coins COINS]
+                            [--coins COINS] [--base-fee BASE_FEE]
 
     Buy coins!
 
@@ -142,7 +142,7 @@ with Docker and systemd are as follows:
                             API secret
       --passphrase PASSPHRASE
                             API passphrase
-      --api-url API_URL     API URL (default: https://api.cbpro.com)
+      --api-url API_URL     API URL (default: https://api.pro.coinbase.com)
       --payment-method-id PAYMENT_METHOD_ID
                             Payment method ID for fiat deposits
       --starting-discount STARTING_DISCOUNT
@@ -165,6 +165,7 @@ with Docker and systemd are as follows:
       --coins COINS         Coins to trade, minimum trade size, withdrawal
                             addresses and external balances. Accepts a JSON
                             string.
+      --base-fee BASE_FEE   Default base fee to subtract from overall balance.
 
     Default coins are as follows:
         {

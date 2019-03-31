@@ -311,6 +311,12 @@ def buy(args, coins, cbpro_client, db_session):
     print('fiat_balances={}'.format(fiat_balances))
 
     fiat_amount = fiat_balances[args.fiat_currency]
+    fee_amount = args.base_fees * fiat_amount
+    fee_amount = int(math.ceil(fee_amount / 100.0)) * \
+        100  # round up to nearest 1/100th
+    print('reserving {} for fees'.format(fee_amount))
+    fiat_amount -= fee_amount
+
     if fiat_amount > args.withdrawal_amount:
         print('fiat balance above {} {}, buying more'.format(
             args.withdrawal_amount, args.fiat_currency))
@@ -383,6 +389,8 @@ def main():
                         ' withdrawal addresses and external balances. '
                         'Accepts a JSON string.',
                         default=default_coins)
+    parser.add_argument('--base-fee', help='Default base fee to subtract '
+                        'from overall balance.', default=0.0015, type=float)
 
     args = parser.parse_args()
     coins = json.loads(args.coins)
