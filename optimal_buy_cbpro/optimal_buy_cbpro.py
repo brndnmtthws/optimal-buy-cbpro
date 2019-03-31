@@ -229,13 +229,7 @@ def start_buy_orders(args, coins, accounts, prices, fiat_balances,
     print('amount_to_buy={}'.format(amount_to_buy))
 
     for c in coins:
-        amount = amount_to_buy[c]
-        fee_amount = args.base_fee * amount
-        # round up to nearest 1/100th
-        fee_amount = int(math.ceil(fee_amount / 100.0)) * 100
-        print('reserving {} for fees for {}'.format(fee_amount, c))
-        amount -= fee_amount
-        place_buy_orders(args, amount, coins, c, prices[c],
+        place_buy_orders(args, amount_to_buy[c], coins, c, prices[c],
                          cbpro_client, db_session)
 
 
@@ -319,9 +313,7 @@ def buy(args, coins, cbpro_client, db_session):
 
     fiat_amount = fiat_balances[args.fiat_currency]
     fee_amount = args.base_fee * fiat_amount
-    fee_amount = int(math.ceil(fee_amount / 100.0)) * \
-        100  # round up to nearest 1/100th
-    print('reserving {} for fees'.format(fee_amount))
+    print('reserving {} for fees, base_fee={}'.format(fee_amount, args.base_fee))
     fiat_amount -= fee_amount
 
     if fiat_amount > args.withdrawal_amount:
@@ -397,7 +389,7 @@ def main():
                         'Accepts a JSON string.',
                         default=default_coins)
     parser.add_argument('--base-fee', help='Default base fee to subtract '
-                        'from overall balance.', default=0.0015, type=float)
+                        'from overall balance.', type=float, default=0.0015)
 
     args = parser.parse_args()
     coins = json.loads(args.coins)
