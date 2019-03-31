@@ -318,6 +318,12 @@ def buy(args, coins, cbpro_client, db_session):
     print('fiat_balances={}'.format(fiat_balances))
 
     fiat_amount = fiat_balances[args.fiat_currency]
+    fee_amount = args.base_fee * fiat_amount
+    fee_amount = int(math.ceil(fee_amount / 100.0)) * \
+        100  # round up to nearest 1/100th
+    print('reserving {} for fees'.format(fee_amount))
+    fiat_amount -= fee_amount
+
     if fiat_amount > args.withdrawal_amount:
         print('fiat balance above {} {}, buying more'.format(
             args.withdrawal_amount, args.fiat_currency))
