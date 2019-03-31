@@ -225,16 +225,17 @@ def start_buy_orders(args, coins, accounts, prices, fiat_balances,
     for coin in balance_differences_fiat:
         amount_to_buy[coin] = math.floor(100 * (balance_differences_fiat[coin] / sum_to_buy) *
                                          fiat_amount) / 100.0
+
     print('amount_to_buy={}'.format(amount_to_buy))
 
-    fee_amount = args.base_fee * amount_to_buy
-    # round up to nearest 1/100th
-    fee_amount = int(math.ceil(fee_amount / 100.0)) * 100
-    print('reserving {} for fees'.format(fee_amount))
-    amount_to_buy -= fee_amount
-
     for c in coins:
-        place_buy_orders(args, amount_to_buy[c], coins, c, prices[c],
+        amount = amount_to_buy[c]
+        fee_amount = args.base_fee * amount
+        # round up to nearest 1/100th
+        fee_amount = int(math.ceil(fee_amount / 100.0)) * 100
+        print('reserving {} for fees for {}'.format(fee_amount, c))
+        amount -= fee_amount
+        place_buy_orders(args, amount, coins, c, prices[c],
                          cbpro_client, db_session)
 
 
