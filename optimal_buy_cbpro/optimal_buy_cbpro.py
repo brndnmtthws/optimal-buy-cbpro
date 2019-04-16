@@ -132,6 +132,16 @@ def set_buy_order(args, coin, price, size, cbpro_client, db_session):
             product_id='{}-{}'.format(coin, args.fiat_currency),
             post_only='true',
         )
+    elif coin == 'XLM':
+        print('placing order coin={0} price={1:.4f} size={2:.8f}'.format(
+            coin, price, size))
+        order = cbpro_client.buy(
+            price='{0:.4f}'.format(price),
+            size='{0:.0f}'.format(size),
+            order_type='limit',
+            product_id='{}-{}'.format(coin, args.fiat_currency),
+            post_only='true',
+        )
     else:
         print('placing order coin={0} price={1:.4f} size={2:.8f}'.format(
             coin, price, size))
