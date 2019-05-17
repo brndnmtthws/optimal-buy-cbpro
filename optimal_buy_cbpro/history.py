@@ -8,7 +8,7 @@ Base = declarative_base()
 
 
 class Order(Base):
-    __tablename__ = 'orders'
+    __tablename__ = "orders"
 
     id = Column(Integer, primary_key=True)
     currency = Column(String)
@@ -19,7 +19,7 @@ class Order(Base):
 
 
 class Withdrawal(Base):
-    __tablename__ = 'withdrawals'
+    __tablename__ = "withdrawals"
 
     id = Column(Integer, primary_key=True)
     currency = Column(String)
@@ -29,7 +29,7 @@ class Withdrawal(Base):
 
 
 class Deposit(Base):
-    __tablename__ = 'deposits'
+    __tablename__ = "deposits"
 
     id = Column(Integer, primary_key=True)
     currency = Column(String)
