@@ -233,9 +233,3 @@ become:
 - It may take a few days for the market to drop enough for the buys to fill
 - If the market experiences a significant bull run, your orders won't be
   filled, but it will reset every 24h (using the default buy timer)
-
-## Support
-
-[![Contact Brenden 😎 on Umpyre](https://api.umpyre.com/badge/634c76f3513240a4bec1eda7fb5db7ea/badge.svg?width=211.275&height=68.04&name=Brenden%20%F0%9F%98%8E&font_size=18&style=light)](https://umpyre.com/u/634c76f3513240a4bec1eda7fb5db7ea)
-
-_Want to offer support? Add yourself above._
