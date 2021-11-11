@@ -113,7 +113,9 @@ with Docker and systemd are as follows:
         $ sudo systemctl enable optimal-buy-cbpro-deposit.timer
 
 1.  Start the systemd timers:
-    $sudo systemctl start optimal-buy-cbpro-buy.timer$ sudo systemctl start optimal-buy-cbpro-deposit.timer
+
+        $ sudo systemctl start optimal-buy-cbpro-buy.timer
+        $ sudo systemctl start optimal-buy-cbpro-deposit.timer
 
 1.  Enjoy!
 
