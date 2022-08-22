@@ -13,7 +13,7 @@ test_requires = ["pytest-cov", "pytest>=3.5.0"]
 
 setup(
     name="optimal_buy_cbpro",
-    version="1.1.21",
+    version="1.1.22",
     description="Buy the coins, optimally!",
     long_description=readme,
     long_description_content_type="text/markdown",
