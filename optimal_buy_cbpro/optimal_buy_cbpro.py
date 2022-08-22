@@ -73,7 +73,7 @@ def get_products(cbpro_client, coins, fiat_currency):
     products = cbpro_client.get_products()
     for p in products:
         if p["base_currency"] in coins and p["quote_currency"] == fiat_currency:
-            coins[p["base_currency"]]["minimum_order_size"] = float(p["base_min_size"])
+            coins[p["base_currency"]]["minimum_order_size"] = float(p["min_market_funds"])
     return products
 
 
