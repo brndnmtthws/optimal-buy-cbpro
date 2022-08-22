@@ -113,7 +113,9 @@ with Docker and systemd are as follows:
         $ sudo systemctl enable optimal-buy-cbpro-deposit.timer
 
 1.  Start the systemd timers:
-    $sudo systemctl start optimal-buy-cbpro-buy.timer$ sudo systemctl start optimal-buy-cbpro-deposit.timer
+
+        $ sudo systemctl start optimal-buy-cbpro-buy.timer
+        $ sudo systemctl start optimal-buy-cbpro-deposit.timer
 
 1.  Enjoy!
 
@@ -233,10 +235,3 @@ become:
 - It may take a few days for the market to drop enough for the buys to fill
 - If the market experiences a significant bull run, your orders won't be
   filled, but it will reset every 24h (using the default buy timer)
-
-# Tip jar
-
-If you got some value out of this, please send some coins my way so I can
-retire from my day job:
-
-- BTC: 3EEAE1oKEMnmHGU5Qxibv9mBQyNnes8j8N
